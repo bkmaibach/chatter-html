@@ -13,13 +13,15 @@ export const WEB_URL = (function () {
   return href.replace(path, '')
 })()
 
-const PROTOCOL = window.location.protocol
+const apiUrlTemplate = (protocol) => (
+  {
+    test: '',
+    development: `${protocol}//localhost:8000`,
+    staging: `${protocol}//pwa-starter-api-dev.herokuapp.com`,
+    production: `${protocol}//api.pwa-starter.co`
+  }[environment]
+)
 
-export const API_URL = {
-  test: '',
-  development: `${PROTOCOL}//localhost:8000`,
-  staging: `${PROTOCOL}//pwa-starter-api-dev.herokuapp.com`,
-  production: `${PROTOCOL}//api.pwa-starter.co`
-}[environment]
-
+export const API_URL = apiUrlTemplate(window.location.protocol)
+export const API_WS_URL = apiUrlTemplate('ws:')
 export const HEADLESS = navigator.userAgent === 'ReactSnap'

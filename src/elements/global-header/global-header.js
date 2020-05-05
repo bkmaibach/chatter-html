@@ -20,6 +20,7 @@ function GlobalHeader () {
         <ul className='nav'>
           <li><Link name='home' activeClass='active-link'>Main App</Link></li>
           <li><Link name='users' activeClass='active-link'>Dashboard App</Link></li>
+          <li><Link name='rooms' activeClass='active-link'>Chatter App</Link></li>
           <li><button onClick={increment}>+</button></li>
         </ul>
       </div>
