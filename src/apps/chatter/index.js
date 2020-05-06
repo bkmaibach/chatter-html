@@ -15,5 +15,5 @@ export const routes = {
 }
 
 export const Chatter = asyncComponent(() =>
-  import('./chatter.js').then(m => m.default)
+  import('./chatter.js').then(m => m.ChatterApp)
 )
