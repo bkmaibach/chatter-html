@@ -3,6 +3,8 @@ import url from '/util/url'
 
 import Rooms from './rooms'
 
+console.log(url('rooms'), Rooms)
+
 export const routes = {
   rooms: {
     path: url('rooms'),

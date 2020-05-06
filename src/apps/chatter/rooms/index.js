@@ -13,6 +13,7 @@ const RoomItem = ({ id, name }) =>
   </div>
 
 const Rooms = () => {
+  console.log("In rooms?")
   const { result, error, isLoading } = useRequest(store, url('api.rooms'))
   if (isLoading) {
     return <div className='container mt-2'><LoadingIndicator /></div>
