@@ -51,7 +51,7 @@ import '/styles/form.less'
 import Main, { routes as mainRoutes } from '/apps/main'
 import Auth, { routes as authRoutes } from '/apps/auth'
 import Dashboard, { routes as dashboardRoutes } from '/apps/dashboard'
-import Chatter, { routes as chatterRoutes } from '/apps/chatter'
+import { Chatter, routes as chatterRoutes } from '/apps/chatter'
 
 // Define our top-level routes
 const routes = {
@@ -70,7 +70,6 @@ const routes = {
   chatter: {
     routes: chatterRoutes,
     component: Chatter
-
   }
 }
 

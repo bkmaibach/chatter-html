@@ -21,7 +21,7 @@ import store from '/store'
 import { WEB_URL } from '/consts'
 
 // Here is our page component which will use the `useRequest` hook.
-export default function Room ({ id }) {
+export function Room ({ id }) {
   const { result, error, isLoading } = useRequest(store, url('api.room', { args: { id } }))
 
   if (isLoading) {

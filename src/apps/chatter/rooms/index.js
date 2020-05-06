@@ -12,7 +12,7 @@ const RoomItem = ({ id, name }) =>
     <h3><Link name='room' args={{ id }}>{name}</Link></h3>
   </div>
 
-const Rooms = () => {
+export const Rooms = () => {
   const { result, error, isLoading } = useRequest(store, url('api.rooms'))
   if (isLoading) {
     return <div className='container mt-2'><LoadingIndicator /></div>
@@ -27,4 +27,4 @@ const Rooms = () => {
   )
 }
 
-export default Rooms
+// export default Rooms
