@@ -10,7 +10,8 @@ export const ChatBox = ({ roomId, ...props }) => {
 
   const handleSend = () => {
     // socketRef.current.send(messageInput)
-    chatSocket.send(messageInput)
+    const toSend = JSON.stringify({ message: messageInput })
+    chatSocket.send(toSend)
     setMessageInput('')
   }
 
