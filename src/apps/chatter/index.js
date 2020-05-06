@@ -10,7 +10,7 @@ export const routes = {
   },
   room: {
     path: url('room'),
-    component: asyncComponent(() => import('./room').then(m => m.default))
+    component: asyncComponent(() => import('./room').then(m => m.Room))
   }
 }
 
