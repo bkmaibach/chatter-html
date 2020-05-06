@@ -8,7 +8,6 @@ export const ChatBox = ({ roomId }) => {
   const socketRef = useRef()
 
   const handleSend = () => {
-    // socketRef.current.send(messageInput)
     const toSend = JSON.stringify({ message: messageInput })
     socketRef.current.send(toSend)
     setMessageInput('')
@@ -25,7 +24,6 @@ export const ChatBox = ({ roomId }) => {
     )
 
     socketRef.current.onmessage = (e) => {
-      console.log('ONMESSAGE WITH DATA ' + e.data)
       const data = JSON.parse(e.data)
       setChatLog((previous) => previous + data.message + '\n')
     }
