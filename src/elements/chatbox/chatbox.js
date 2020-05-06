@@ -1,17 +1,16 @@
 import './chatbox.less'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import url from '/util/url'
 
-export const ChatBox = ({ roomId, ...props }) => {
+export const ChatBox = ({ roomId }) => {
   const [messageInput, setMessageInput] = useState('')
   const [chatLog, setChatLog] = useState('')
-  const [chatSocket, setChatSocket] = useState()
-  // const socketRef = useRef()
+  const socketRef = useRef()
 
   const handleSend = () => {
     // socketRef.current.send(messageInput)
     const toSend = JSON.stringify({ message: messageInput })
-    chatSocket.send(toSend)
+    socketRef.current.send(toSend)
     setMessageInput('')
   }
 
@@ -21,23 +20,23 @@ export const ChatBox = ({ roomId, ...props }) => {
 
   useEffect(() => {
     console.log('Connecting new websocket to ' + url('api_ws.chatSocket', { args: { id: roomId } }))
-    const newSocket = new window.WebSocket(
+    socketRef.current = new window.WebSocket(
       url('api_ws.chatSocket', { args: { id: roomId } })
     )
 
-    newSocket.onmessage = (e) => {
+    socketRef.current.onmessage = (e) => {
+      console.log('ONMESSAGE WITH DATA ' + e.data)
       const data = JSON.parse(e.data)
       setChatLog((previous) => previous + data.message + '\n')
     }
 
-    newSocket.onclose = (e) => {
+    socketRef.current.onclose = (e) => {
       console.error('Chat socket closed unexpectedly')
     }
-    setChatSocket(newSocket)
-    // socketRef.current = newSocket
-    // return () => {
-    //   console.log('Socket cleanup?')
-    // }
+
+    return () => {
+      socketRef.current.close()
+    }
   }, [])
 
   return (
@@ -47,14 +46,15 @@ export const ChatBox = ({ roomId, ...props }) => {
         cols={100}
         name={'ChatBox'}
         value={chatLog}
-        {...props}
       />
 
-      <input id='chatbox-message-input' type='text' size='100'
+      <input id='chatbox-message-input'
+        type='text'
+        size='100'
         value={messageInput}
         onChange={handleChange} />
 
-      <button className='btn' onClick={handleSend}>Primary</button>
+      <button className='btn' onClick={handleSend} disabled={messageInput === ''} >Send</button>
     </div>
   )
 }
