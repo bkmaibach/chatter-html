@@ -8,7 +8,7 @@ export const ChatBox = ({ roomId }) => {
   const socketRef = useRef()
 
   const handleSend = () => {
-    const toSend = JSON.stringify({ message: messageInput })
+    const toSend = JSON.stringify({ message: messageInput, command: 'NEW_MESSAGE' })
     socketRef.current.send(toSend)
     setMessageInput('')
   }
