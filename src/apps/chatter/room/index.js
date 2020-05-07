@@ -9,6 +9,7 @@ import Helmet from '@app-elements/helmet'
 import LoadingIndicator from '@app-elements/loading-indicator'
 import { Link } from '@app-elements/router'
 import { useRequest } from '@app-elements/use-request'
+import { ChatBox } from '/elements/chatbox'
 
 // `url` is a util for getting route paths by name. It's a project
 // level util because it reads the statically defined [routes.js](/routes.html)
@@ -20,7 +21,7 @@ import store from '/store'
 import { WEB_URL } from '/consts'
 
 // Here is our page component which will use the `useRequest` hook.
-export default function Room ({ id }) {
+export function Room ({ id }) {
   const { result, error, isLoading } = useRequest(store, url('api.room', { args: { id } }))
 
   if (isLoading) {
@@ -38,7 +39,7 @@ export default function Room ({ id }) {
   return (
     <div key='user' className='container pt-7'>
       <Helmet
-        title={id}
+        title={name}
         meta={[
           { name: 'description', content: 'Helmet description' },
           { property: 'og:type', content: 'article' },
@@ -49,6 +50,7 @@ export default function Room ({ id }) {
         ]}
       />
       <h1>{name}</h1>
+      <ChatBox roomId={id} />
       <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
     </div>
   )

@@ -10,7 +10,7 @@ const ChatterFooter = () =>
     <button onClick={ev => logout()}>Logout</button>
   </header>
 
-export default function ChatterApp () {
+export function ChatterApp () {
   const { token, currentPath } = getState()
   if (token == null) {
     showNotification({ message: 'Please login to view that page.' })
