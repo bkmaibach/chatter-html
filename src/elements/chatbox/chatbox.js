@@ -1,6 +1,7 @@
 import './chatbox.less'
 import React, { useState, useEffect, useRef } from 'react'
 import url from '/util/url'
+import { getState } from '/store'
 
 export const ChatBox = ({ roomId }) => {
   const [messageInput, setMessageInput] = useState('')
@@ -8,7 +9,9 @@ export const ChatBox = ({ roomId }) => {
   const socketRef = useRef()
 
   const handleSend = () => {
-    const toSend = JSON.stringify({ message: messageInput, command: 'NEW_MESSAGE' })
+    const { token } = getState()
+    console.log('USING TOKEN ' + token)
+    const toSend = JSON.stringify({ text: messageInput, command: 'NEW_MESSAGE', token })
     socketRef.current.send(toSend)
     setMessageInput('')
   }
@@ -18,14 +21,18 @@ export const ChatBox = ({ roomId }) => {
   }
 
   useEffect(() => {
-    console.log('Connecting new websocket to ' + url('api_ws.chatSocket', { args: { id: roomId } }))
-    socketRef.current = new window.WebSocket(
-      url('api_ws.chatSocket', { args: { id: roomId } })
-    )
+    // Alternative: put token in querystring:
+    // console.log('Connecting new websocket to ' + url('api_ws.chatSocket', { args: { id: roomId }, queries: { token: 'I AM TOKEN HI' }}))
+    const socketUrl = url('api_ws.chatSocket', { args: { id: roomId } })
+    console.log('Connecting new websocket to ' + socketUrl)
+    socketRef.current = new window.WebSocket(socketUrl)
 
     socketRef.current.onmessage = (e) => {
       const data = JSON.parse(e.data)
-      setChatLog((previous) => previous + data.message + '\n')
+      console.log('ONMESSAGE ACTIVATED WITH DATA: ')
+      console.log(JSON.stringify(data, null, 2))
+
+      setChatLog((previous) => previous + data.message.text + '\n')
     }
 
     socketRef.current.onclose = (e) => {
