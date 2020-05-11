@@ -1,25 +1,16 @@
-// import './chatbox.less'
+import './message.less'
 // import React, { useState, useEffect, useRef } from 'react'
+import React from 'react'
 // import url from '/util/url'
-
-// export const Message = ({ chat, user }) => {
-
-//   return (
-//     <div className='chatbox-component'>
-//       <textarea
-//         rows={20}
-//         cols={100}
-//         name={'ChatBox'}
-//         value={chatLog}
-//       />
-
-//       <input id='chatbox-message-input'
-//         type='text'
-//         size='100'
-//         value={messageInput}
-//         onChange={handleChange} />
-
-//       <button className='btn' onClick={handleSend} disabled={messageInput === ''} >Send</button>
-//     </div>
-//   )
-// }
+export const Message = ({ content, timestamp, author }) => {
+  return (
+    <div className='message'>
+      <div className='message__content'>
+        {content}
+      </div>
+      <div className='message__stamp'>
+        <small>{author} - {timestamp}</small>
+      </div>
+    </div>
+  )
+}

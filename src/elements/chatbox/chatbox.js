@@ -2,10 +2,11 @@ import './chatbox.less'
 import React, { useState, useEffect, useRef } from 'react'
 import url from '/util/url'
 import { getState } from '/store'
+import { Message } from '/elements/message'
 
 export const ChatBox = ({ roomId }) => {
   const [messageInput, setMessageInput] = useState('')
-  const [chatLog, setChatLog] = useState('')
+  const [chatLog, setChatLog] = useState([])
   const socketRef = useRef()
 
   const handleSend = () => {
@@ -32,7 +33,11 @@ export const ChatBox = ({ roomId }) => {
       console.log('ONMESSAGE ACTIVATED WITH DATA: ')
       console.log(JSON.stringify(data, null, 2))
 
-      setChatLog((previous) => previous + data.message.text + '\n')
+      setChatLog((previous) => previous.concat({
+        content: data.message.text,
+        author: data.message.author,
+        timestamp: data.message.timestamp
+      }))
     }
 
     socketRef.current.onclose = (e) => {
@@ -46,12 +51,15 @@ export const ChatBox = ({ roomId }) => {
 
   return (
     <div className='chatbox-component'>
-      <textarea
+
+      {/* <textarea
         rows={20}
         cols={100}
         name={'ChatBox'}
         value={chatLog}
-      />
+      /> */}
+
+      {chatLog.map((entry) => <Message content={entry.content} author={entry.author} timestamp={entry.timestamp} />)}
 
       <input id='chatbox-message-input'
         type='text'
