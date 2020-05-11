@@ -29,9 +29,7 @@ export const ChatBox = ({ roomId }) => {
 
     socketRef.current.onmessage = (e) => {
       const data = JSON.parse(e.data)
-      console.log('ONMESSAGE ACTIVATED WITH DATA: ')
-      console.log(JSON.stringify(data, null, 2))
-
+      console.log('ONMESSAGE: ', { data })
       setChatLog((previous) => previous + data.message.text + '\n')
     }
 
