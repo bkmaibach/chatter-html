@@ -1,53 +1,62 @@
 import './chatbox.less'
 import React, { useState, useEffect, useRef } from 'react'
-import url from '/util/url'
 import { getState } from '/store'
 import { Message } from '/elements/message'
+import { WebSocketServiceInstance } from '/services/WebSocketService'
 
 export const ChatBox = ({ roomId }) => {
-  const [messageInput, setMessageInput] = useState('')
+  const [textInput, setTextInput] = useState('')
   const [chatLog, setChatLog] = useState([])
-  const socketRef = useRef()
+  const wssiRef = useRef()
 
-  const handleSend = () => {
-    const { token } = getState()
-    console.log('USING TOKEN ' + token)
-    const toSend = JSON.stringify({ text: messageInput, command: 'NEW_MESSAGE', token })
-    socketRef.current.send(toSend)
-    setMessageInput('')
+  const setPreviousMessages = (messages) => {
+    console.log('Setting previous messages ', { messages })
+    setChatLog(messages)
   }
 
-  const handleChange = (e) => {
-    setMessageInput(e.target.value)
+  const appendChatLog = (message) => {
+    console.log('Appending using passed data: ', { message })
+    setChatLog((previous) => previous.concat({ text: message.text, author: message.author, timestamp: message.timestamp }))
+  }
+
+  const waitForSocketConnection = (callback) => {
+    setTimeout(
+      function () {
+        // Check if websocket state is OPEN
+        if (WebSocketServiceInstance.state(roomId) === 1) {
+          console.log('Connection is made')
+          callback()
+        } else {
+          console.log('wait for connection...')
+          waitForSocketConnection(callback)
+        }
+      }, 100) // wait 100 milisecond for the connection...
   }
 
   useEffect(() => {
-    // Alternative: put token in querystring:
-    // console.log('Connecting new websocket to ' + url('api_ws.chatSocket', { args: { id: roomId }, queries: { token: 'I AM TOKEN HI' }}))
-    const socketUrl = url('api_ws.chatSocket', { args: { id: roomId } })
-    console.log('Connecting new websocket to ' + socketUrl)
-    socketRef.current = new window.WebSocket(socketUrl)
+    // console.log('Initializing websocket to room ' + roomId)
+    wssiRef.current = WebSocketServiceInstance
+    const { token } = getState()
+    waitForSocketConnection(() => {
+      wssiRef.current.initChatUser(roomId, token)
+      wssiRef.current.addCallbacks(roomId, setPreviousMessages, appendChatLog)
+      wssiRef.current.fetchMessages(roomId, token)
+    })
 
-    socketRef.current.onmessage = (e) => {
-      const data = JSON.parse(e.data)
-      console.log('ONMESSAGE ACTIVATED WITH DATA: ')
-      console.log(JSON.stringify(data, null, 2))
-
-      setChatLog((previous) => previous.concat({
-        content: data.message.text,
-        author: data.message.author,
-        timestamp: data.message.timestamp
-      }))
-    }
-
-    socketRef.current.onclose = (e) => {
-      console.error('Chat socket closed unexpectedly')
-    }
-
-    return () => {
-      socketRef.current.close()
-    }
+    // Cleanup goes here...
+    // return () => { }
   }, [])
+
+  const handleSend = () => {
+    const { token } = getState()
+    console.log('Sending using token ', token)
+    WebSocketServiceInstance.newChatMessage(roomId, textInput, token)
+    setTextInput('')
+  }
+
+  const handleChange = (e) => {
+    setTextInput(e.target.value)
+  }
 
   return (
     <div className='chatbox-component'>
@@ -58,16 +67,15 @@ export const ChatBox = ({ roomId }) => {
         name={'ChatBox'}
         value={chatLog}
       /> */}
-
-      {chatLog.map((entry) => <Message content={entry.content} author={entry.author} timestamp={entry.timestamp} />)}
+      {chatLog.map((entry) => <Message content={entry.text} author={entry.author} timestamp={entry.timestamp} />)}
 
       <input id='chatbox-message-input'
         type='text'
         size='100'
-        value={messageInput}
+        value={textInput}
         onChange={handleChange} />
 
-      <button className='btn' onClick={handleSend} disabled={messageInput === ''} >Send</button>
+      <button className='btn' onClick={handleSend} disabled={textInput === ''} >Send</button>
     </div>
   )
 }
