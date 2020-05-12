@@ -77,7 +77,7 @@ class WebSocketService {
 
   newChatMessage (roomId, text, token) {
     // console.log('using roomId type ' + typeof roomId)
-    this.sendMessage(roomId, { command: 'NEW_MESSAGE', text, token })
+    this.sendMessage(roomId, { command: 'NEW_MESS AGE', text, token })
   }
 
   addCallbacks (roomId, messagesCallback, newMessageCallback) {
