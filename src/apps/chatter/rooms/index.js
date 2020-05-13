@@ -1,11 +1,13 @@
 // We are going to use ListResource to fetch and display results of
 // an API request. You could also use the lower-level [withRequest HoC](https://github.com/inputlogic/elements/tree/master/components/with-request)
-import { useRequest } from '@app-elements/useRequest'
+import Form from '@app-elements/form'
+import { useRequest } from '@app-elements/use-request'
 import LoadingIndicator from '@app-elements/loading-indicator'
-import { Link } from '@app-elements/router'
+import { Link, routeTo } from '@app-elements/router'
 import url from '/util/url'
 import './rooms.less'
 import store from '/store'
+// import React from 'react'
 
 const RoomItem = ({ id, name }) =>
   <div class='room-item'>
@@ -16,6 +18,22 @@ export const Rooms = () => {
   // const [textInput, setTextInput] = useState('')
   const { result, error, isLoading } = useRequest(store, url('api.rooms'))
 
+  const formProps = {
+    name: 'NewRoomForm',
+    action: 'rooms',
+    method: 'post',
+    noAuth: true,
+    initialData: {
+    },
+    onSuccess: (result) => {
+      console.log('onSuccess with result ', { result })
+      routeTo('rooms')
+    },
+    onFailure: (err) => {
+      console.log('onFailure', err)
+    }
+  }
+
   if (isLoading) {
     return <div className='container mt-2'><LoadingIndicator /></div>
   }
@@ -25,6 +43,11 @@ export const Rooms = () => {
   return (
     <div className='container pt-7 pb-4'>
       {result.results.map(({ id, name }) => RoomItem({ id, name }))}
+
+      <Form {...formProps}>
+        <input isFormField name='name' />
+        <button type='submit'>Create New Room</button>
+      </Form>
     </div>
   )
 }
