@@ -9,9 +9,8 @@ import Helmet from '@app-elements/helmet'
 import LoadingIndicator from '@app-elements/loading-indicator'
 import { Link } from '@app-elements/router'
 import { useRequest } from '@app-elements/use-request'
-import { ChatBox } from '/elements/chatbox'
-import { WebSocketServiceInstance } from '/services/WebSocketService'
-import React, { useEffect } from 'react'
+import { ChatBox } from '../components/chatbox'
+import React from 'react'
 
 // `url` is a util for getting route paths by name. It's a project
 // level util because it reads the statically defined [routes.js](/routes.html)
@@ -24,10 +23,6 @@ import { WEB_URL } from '/consts'
 
 // Here is our page component which will use the `useRequest` hook.
 export function Room ({ id }) {
-  useEffect(() => {
-    WebSocketServiceInstance.connect(parseInt(id, 10))
-  }, [])
-
   const { result, error, isLoading } = useRequest(store, url('api.room', { args: { id } }))
 
   if (isLoading) {
@@ -56,7 +51,7 @@ export function Room ({ id }) {
         ]}
       />
       <h1>{name}</h1>
-      <ChatBox roomId={parseInt(id, 10)} />
+      <ChatBox roomId={id} />
       <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
     </div>
   )
