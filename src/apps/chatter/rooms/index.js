@@ -20,9 +20,9 @@ export const Rooms = () => {
 
   const formProps = {
     name: 'NewRoomForm',
-    action: 'rooms',
+    action: url('api.rooms'),
     method: 'post',
-    noAuth: true,
+    noAuth: false,
     initialData: {
     },
     onSuccess: (result) => {
