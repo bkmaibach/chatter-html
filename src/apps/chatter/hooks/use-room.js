@@ -6,6 +6,11 @@ export function useRoom (roomId) {
   const [messages, setMessages] = useState([])
   const socketRef = useRef()
 
+  const NEW_MESSAGES = 'NEW_MESSAGES'
+  const MESSAGES = 'MESSAGES'
+  const INIT_CHAT = 'INIT_CHAT'
+  const FETCH_MESSAGES = 'FETCH_MESSAGES'
+
   useEffect(() => {
     connect()
   }, [])
@@ -34,9 +39,9 @@ export function useRoom (roomId) {
     console.log('DATA IN: ', { data })
     const parsedData = JSON.parse(data)
     const command = parsedData.command
-    if (command === 'NEW_MESSAGE') {
+    if (command === NEW_MESSAGES) {
       onNewMessage(parsedData)
-    } else if (command === 'MESSAGES') {
+    } else if (command === MESSAGES) {
       onFetchMessages(parsedData)
     }
   }
@@ -56,7 +61,7 @@ export function useRoom (roomId) {
     const { token } = getState()
     console.log('INITIALIZING USER WITH TOKEN: ', token)
     sendCommand({
-      command: 'INIT_CHAT',
+      command: INIT_CHAT,
       token
     })
   }
@@ -65,7 +70,7 @@ export function useRoom (roomId) {
     const { token } = getState()
     console.log('SENDING FETCH COMMAND WITH TOKEN: ', token)
     sendCommand({
-      command: 'FETCH_MESSAGES',
+      command: FETCH_MESSAGES,
       token
     })
   }
@@ -74,7 +79,7 @@ export function useRoom (roomId) {
     const { token } = getState()
     console.log('SENDING NEW MESSAGE WITH TOKEN: ', token)
     sendCommand({
-      command: 'NEW_MESSAGE',
+      command: NEW_MESSAGES,
       text,
       token
     })
