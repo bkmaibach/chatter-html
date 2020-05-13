@@ -25,7 +25,7 @@ import { WEB_URL } from '/consts'
 // Here is our page component which will use the `useRequest` hook.
 export function Room ({ id }) {
   useEffect(() => {
-    WebSocketServiceInstance.connect(parseInt(id))
+    WebSocketServiceInstance.connect(parseInt(id, 10))
   }, [])
 
   const { result, error, isLoading } = useRequest(store, url('api.room', { args: { id } }))
@@ -56,7 +56,7 @@ export function Room ({ id }) {
         ]}
       />
       <h1>{name}</h1>
-      <ChatBox roomId={parseInt(id)} />
+      <ChatBox roomId={parseInt(id, 10)} />
       <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
     </div>
   )

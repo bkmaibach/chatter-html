@@ -10,10 +10,9 @@ export function useWebSockets (roomId) {
     }
   })
   const callbacks = useRef({})
-  const socketRef = useRef()
+  const socketRef = useRef(new window.WebSocket(socketUrl))
 
   const connect = () => {
-    socketRef.current = new window.WebSocket(socketUrl)
     socketRef.current.onopen = () => {
       console.log('WebSocket open to url ', socketUrl)
     }
@@ -68,17 +67,9 @@ export function useWebSockets (roomId) {
     callbacks.current['NEW_MESSAGE'] = newMessageCallback
   }
 
-  const sendMessage = ({
-    command,
-    text,
-    token
-  }) => {
+  const sendMessage = ({ command, text, token }) => {
     try {
-      socketRef.current.send(JSON.stringify({
-        command,
-        text,
-        token
-      }))
+      socketRef.current.send(JSON.stringify({ command, text, token }))
     } catch (err) {
       console.log(err.message)
     }
