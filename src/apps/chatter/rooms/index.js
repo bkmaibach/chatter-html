@@ -1,13 +1,11 @@
 // We are going to use ListResource to fetch and display results of
 // an API request. You could also use the lower-level [withRequest HoC](https://github.com/inputlogic/elements/tree/master/components/with-request)
-// import Form from '@app-elements/form'
-import useRequest from '@app-elements/useRequest'
+import { useRequest } from '@app-elements/useRequest'
 import LoadingIndicator from '@app-elements/loading-indicator'
 import { Link } from '@app-elements/router'
 import url from '/util/url'
 import './rooms.less'
 import store from '/store'
-import React from 'react'
 
 const RoomItem = ({ id, name }) =>
   <div class='room-item'>
