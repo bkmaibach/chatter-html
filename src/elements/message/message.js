@@ -1,12 +1,14 @@
 import './message.less'
-// import React, { useState, useEffect, useRef } from 'react'
 import React from 'react'
-// import url from '/util/url'
+// import Linkify from 'react-linkify'
+import Linkifier from 'react-linkifier'
+
 export const Message = ({ content, timestamp, author }) => {
   return (
     <div className='message'>
       <div className='message__content'>
-        {content}
+        <Linkifier>{content}</Linkifier>
+        {/* <Linkify>{content}</Linkify> */}
       </div>
       <div className='message__stamp'>
         <small>{author} - {timestamp}</small>
