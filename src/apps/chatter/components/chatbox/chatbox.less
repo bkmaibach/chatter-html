@@ -1,23 +1,13 @@
-.chatbox-component {
+.chatbox {
     &:extend(.input-component all);
 
-    textarea {
-        width: 100%;
-        padding: .65em .75rem;
-        border: none;
-        outline: none;
-        border: 1px solid @border-color;
-        border-radius: @border-radius;
-        background-color: @white;
-        font-size: 1rem;
-        font-family: @font-family;
-        -webkit-appearance: none;
-        color: @text-color;
-        font-weight: normal;
-        resize: none;
 
-        &:focus {
-            border: 1px solid @secondary-color;
-        }
-    }
+}
+
+.chatbox__input-row{
+    display: flex;
+}
+
+.chatbox__send-button {
+    margin-left: 20px
 }
