@@ -1,13 +1,11 @@
 import { useRequest } from '@app-elements/use-request'
 import { Link } from '@app-elements/router'
-import Form, { SubmitButton } from '@app-elements/form'
 import LoadingIndicator from '@app-elements/loading-indicator'
-
-import { TextInput } from '/elements/text-input'
-
-import store, { dispatch, clearRequest } from '/store'
 import url from '/util/url'
-
+import { useEffect, useState } from 'react'
+import { TextInput } from '/elements/text-input'
+import store, { getState } from '/store'
+import { request } from '@app-elements/use-request/request'
 import './rooms.less'
 
 const RoomItem = ({ id, name }) => (
@@ -66,7 +64,7 @@ export const Rooms = () => {
     <div className='container pt-7 pb-4'>
       {roomsAreLoading && <div className='container mt-2'><LoadingIndicator /></div>}
       {roomList.map(({ id, name }) => RoomItem({ id, name }))}
-      <input id='new-room-input'
+      <TextInput id='new-room-input'
         type='text'
         size='100'
         value={newNameInput}
