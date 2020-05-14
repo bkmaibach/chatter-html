@@ -2,12 +2,12 @@
 // an API request. You could also use the lower-level [withRequest HoC](https://github.com/inputlogic/elements/tree/master/components/with-request)
 import { useRequest } from '@app-elements/use-request'
 import LoadingIndicator from '@app-elements/loading-indicator'
-import { Link, routeTo } from '@app-elements/router'
+import { Link } from '@app-elements/router'
 import url from '/util/url'
 import './rooms.less'
 import store, { getState } from '/store'
 import { request } from '@app-elements/use-request/request'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 // import React from 'react'
 
 const RoomItem = ({ id, name }) => (
@@ -18,7 +18,27 @@ const RoomItem = ({ id, name }) => (
 
 export const Rooms = () => {
   const [newNameInput, setNewNameInput] = useState('')
+  // I am nearly certain there is a smarter way to accomplish this...
+  const [newRoomToRender, setNewRoomToRender] = useState(true)
+  const [roomsAreLoading, setRoomsAreLoading] = useState(false)
+  const [roomList, setRoomList] = useState([])
   const { token } = getState()
+
+  useEffect(() => {
+    console.log('USING EFFECT')
+    if (newRoomToRender) {
+      console.log('REQUESTING ROOMS')
+      const { result, error, isLoading } = useRequest(store, url('api.rooms'))
+      setRoomsAreLoading(isLoading)
+      if (error) {
+        console.log(error)
+      }
+      console.log('REQUESTING ROOMS')
+      setRoomList(result.results)
+      // I am nearly certain there is a smarter way to accomplish this...
+      setNewRoomToRender(false)
+    }
+  }, [newRoomToRender])
 
   const handleCreateNewRoom = () => {
     const { xhr, promise } = request({
@@ -32,9 +52,9 @@ export const Rooms = () => {
       }
     })
     promise.then((res) => {
+      setNewRoomToRender(true)
       setNewNameInput('')
       console.log('Response obtained: ', { res })
-      routeTo('rooms')
     }).catch((err) => { console.warn({ err, xhr }) })
   }
 
@@ -42,17 +62,10 @@ export const Rooms = () => {
     setNewNameInput(e.target.value)
   }
 
-  const { result, error, isLoading } = useRequest(store, url('api.rooms'))
-
-  if (isLoading) {
-    return <div className='container mt-2'><LoadingIndicator /></div>
-  }
-  if (error) {
-    return <div>Error!</div>
-  }
   return (
     <div className='container pt-7 pb-4'>
-      {result.results.map(({ id, name }) => RoomItem({ id, name }))}
+      {roomsAreLoading && <div className='container mt-2'><LoadingIndicator /></div>}
+      {roomList.map(({ id, name }) => RoomItem({ id, name }))}
       <input id='new-room-input'
         type='text'
         size='100'
