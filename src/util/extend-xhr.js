@@ -4,10 +4,10 @@ const xhr = window.XMLHttpRequest
 const nativeOpen = xhr.prototype.open
 
 // You may wish to show a notification, redirect to a new page, or reload all state.
-const logout = () => {
-  window.localStorage.removeItem('token')
-  // window.location.reload()
-}
+// const logout = () => {
+//   window.localStorage.removeItem('token')
+//   // window.location.reload()
+// }
 
 xhr.prototype.open = function () {
   this.addEventListener('load', function () {
@@ -15,7 +15,7 @@ xhr.prototype.open = function () {
     switch (this.status) {
       case 401:
         console.warn('User token is no longer valid.', this.responseText)
-        logout()
+        // logout()
         break
 
       case 402:

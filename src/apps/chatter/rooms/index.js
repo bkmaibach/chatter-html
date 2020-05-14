@@ -1,15 +1,14 @@
-// We are going to use ListResource to fetch and display results of
-// an API request. You could also use the lower-level [withRequest HoC](https://github.com/inputlogic/elements/tree/master/components/with-request)
 import { useRequest } from '@app-elements/use-request'
-import LoadingIndicator from '@app-elements/loading-indicator'
 import { Link } from '@app-elements/router'
+import Form, { SubmitButton } from '@app-elements/form'
+import LoadingIndicator from '@app-elements/loading-indicator'
+
+import { TextInput } from '/elements/text-input'
+
+import store, { dispatch, clearRequest } from '/store'
 import url from '/util/url'
+
 import './rooms.less'
-// import store, { getState } from '/store'
-import store from '/store'
-import { request } from '@app-elements/use-request/request'
-import React, { useState } from 'react'
-// import React from 'react'
 
 const RoomItem = ({ id, name }) => (
   <div class='room-item'>
@@ -18,50 +17,40 @@ const RoomItem = ({ id, name }) => (
 )
 
 export const Rooms = () => {
-  const [newNameInput, setNewNameInput] = useState('')
-  // const { token } = getState()
-
-  const handleCreateNewRoom = () => {
-    const { xhr, promise } = request({
-      url: url('api.rooms'),
-      method: 'post',
-      // headers: {
-      //   Authorization: `token ${token}`
-      // },
-      data: {
-        name: newNameInput
-      }
-    })
-    promise.then((res) => {
-      setNewNameInput('')
-      console.log('Response obtained: ', { res })
-      // const hasConflict = res.payload.conflicts.length > 0
-    }).catch((err) => { console.warn({ err, xhr }) })
-  }
-
-  const handleInputChange = (e) => {
-    setNewNameInput(e.target.value)
-  }
-
   const { result, error, isLoading } = useRequest(store, url('api.rooms'))
 
   if (isLoading) {
     return <div className='container mt-2'><LoadingIndicator /></div>
   }
+
   if (error) {
     return <div>Error!</div>
   }
+
+  const formProps = {
+    name: 'CreateRoom',
+    action: url('api.rooms'),
+    method: 'post',
+    onSuccess: (res) => {
+      console.log('onSuccess', { res })
+      // useRequest caches results, so we dispatch the clearRequest
+      // action to clear the cache, which will trigger the above `useRequest`
+      // call to re-fetch data from the server.
+      dispatch(clearRequest(url('api.rooms')))
+    },
+    onFailure: (err) => {
+      console.error('onSuccess', { err })
+    }
+  }
+
   return (
     <div className='container pt-7 pb-4'>
-      {result.results.map(({ id, name }) => RoomItem({ id, name }))}
-      <input id='new-room-input'
-        type='text'
-        size='100'
-        value={newNameInput}
-        onChange={handleInputChange} />
-      <button className='btn' onClick={handleCreateNewRoom} disabled={newNameInput === ''} >
-        Create New Room
-      </button>
+      {result.results.map(RoomItem)}
+
+      <Form {...formProps}>
+        <TextInput name='name' placeholder='Room Name' required isFormField />
+        <SubmitButton className='btn'>Create New Room</SubmitButton>
+      </Form>
     </div>
   )
 }
