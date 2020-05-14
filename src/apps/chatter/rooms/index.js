@@ -5,8 +5,7 @@ import LoadingIndicator from '@app-elements/loading-indicator'
 import { Link } from '@app-elements/router'
 import url from '/util/url'
 import './rooms.less'
-// import store, { getState } from '/store'
-import store from '/store'
+import store, { getState } from '/store'
 import { request } from '@app-elements/use-request/request'
 import React, { useState } from 'react'
 // import React from 'react'
@@ -19,15 +18,15 @@ const RoomItem = ({ id, name }) => (
 
 export const Rooms = () => {
   const [newNameInput, setNewNameInput] = useState('')
-  // const { token } = getState()
+  const { token } = getState()
 
   const handleCreateNewRoom = () => {
     const { xhr, promise } = request({
       url: url('api.rooms'),
       method: 'post',
-      // headers: {
-      //   Authorization: `token ${token}`
-      // },
+      headers: {
+        Authorization: `token ${token}`
+      },
       data: {
         name: newNameInput
       }
