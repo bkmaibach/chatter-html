@@ -16,6 +16,7 @@ import { render } from 'react'
 import Helmet from '@app-elements/helmet'
 import Notification from '@app-elements/notification'
 import Router from '@app-elements/router'
+import { configure } from '@app-elements/with-request/makeRequest'
 
 // Here, we import Components we want to render on *all* routes. For example,
 // we include a GlobalHeader, and a *NotFound* component which renders when no route is
@@ -72,6 +73,9 @@ const routes = {
     component: Chatter
   }
 }
+
+// We will also configure the storage function that withRequest will use.
+configure({ storage: window.localStorage })
 
 // And, finally, our Root! This is the top-level Component to render
 // into the DOM and kick-start our entire app!

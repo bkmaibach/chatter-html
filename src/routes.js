@@ -23,7 +23,7 @@ export default [
     url: API_URL,
     routes: {
       login: '/auth/login',
-      signup: '/auth/login',
+      signup: '/auth/signup',
       forgotPassword: '/auth/forgot-password',
       resetPassword: '/auth/reset-password',
       users: '/users',

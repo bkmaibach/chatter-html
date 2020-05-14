@@ -1,14 +1,14 @@
-// We are going to use ListResource to fetch and display results of
-// an API request. You could also use the lower-level [withRequest HoC](https://github.com/inputlogic/elements/tree/master/components/with-request)
 import { useRequest } from '@app-elements/use-request'
-import LoadingIndicator from '@app-elements/loading-indicator'
 import { Link } from '@app-elements/router'
+import Form, { SubmitButton } from '@app-elements/form'
+import LoadingIndicator from '@app-elements/loading-indicator'
+
+import { TextInput } from '/elements/text-input'
+
+import store, { dispatch, clearRequest } from '/store'
 import url from '/util/url'
+
 import './rooms.less'
-import store, { getState } from '/store'
-import { request } from '@app-elements/use-request/request'
-import React, { useState, useEffect } from 'react'
-// import React from 'react'
 
 const RoomItem = ({ id, name }) => (
   <div class='room-item'>
