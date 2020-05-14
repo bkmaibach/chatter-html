@@ -2,7 +2,7 @@
 // an API request. You could also use the lower-level [withRequest HoC](https://github.com/inputlogic/elements/tree/master/components/with-request)
 import { useRequest } from '@app-elements/use-request'
 import LoadingIndicator from '@app-elements/loading-indicator'
-import { Link } from '@app-elements/router'
+import { Link, routeTo } from '@app-elements/router'
 import url from '/util/url'
 import './rooms.less'
 import store, { getState } from '/store'
@@ -34,7 +34,7 @@ export const Rooms = () => {
     promise.then((res) => {
       setNewNameInput('')
       console.log('Response obtained: ', { res })
-      // const hasConflict = res.payload.conflicts.length > 0
+      routeTo('rooms')
     }).catch((err) => { console.warn({ err, xhr }) })
   }
 
