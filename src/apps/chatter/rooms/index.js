@@ -39,7 +39,7 @@ export const Rooms = () => {
       dispatch(clearRequest(url('api.rooms')))
     },
     onFailure: (err) => {
-      console.error('onSuccess', { err })
+      console.error('onFailure', { err })
     }
   }
 
