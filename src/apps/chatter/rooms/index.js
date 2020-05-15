@@ -4,10 +4,8 @@ import Form, { SubmitButton } from '@app-elements/form'
 import LoadingIndicator from '@app-elements/loading-indicator'
 
 import { TextInput } from '/elements/text-input'
-
 import store, { dispatch, clearRequest } from '/store'
 import url from '/util/url'
-
 import './rooms.less'
 
 const RoomItem = ({ id, name }) => (

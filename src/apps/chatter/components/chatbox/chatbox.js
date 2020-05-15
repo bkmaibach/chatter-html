@@ -1,24 +1,29 @@
-import './chatbox.less'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+
 import { Message } from '/elements/message'
-import { useRoom } from '../../hooks/use-room'
+import { useRoom } from '/apps/chatter/hooks/use-room'
+import './chatbox.less'
 
 export const ChatBox = ({ roomId }) => {
   const [textInput, setTextInput] = useState('')
   const [messages, sendNewMessage] = useRoom(roomId)
+  const inputEl = useRef(null)
 
   useEffect(() => {
-    document.querySelector('#chatbox__message-input').focus()
-    document.querySelector('#chatbox__message-input').onkeyup = function (e) {
-      if (e.keyCode === 13) {
-        document.querySelector('.chatbox__send-button').click()
-      }
-    }
-  }, [])
+    inputEl.current.focus()
+  }, [messages])
 
   const handleSend = () => {
+    console.log('sending')
     sendNewMessage(textInput)
     setTextInput('')
+    inputEl.current.focus()
+  }
+
+  const handleKeyUp = (e) => {
+    if (e.keyCode === 13) {
+      handleSend()
+    }
   }
 
   const handleInputChange = (e) => {
@@ -28,16 +33,23 @@ export const ChatBox = ({ roomId }) => {
   return (
     <div className='chatbox'>
 
-      {messages.map((entry) => <Message content={entry.text} author={entry.author} timestamp={entry.timestamp} />)}
+      {messages.map(Message)}
 
       <div className='chatbox__input-row'>
         <input id='chatbox__message-input'
+          ref={inputEl}
           type='text'
           size='100'
           value={textInput}
-          onChange={handleInputChange} />
+          onChange={handleInputChange}
+          onKeyUp={handleKeyUp}
+        />
 
-        <button className='chatbox__send-button btn' onClick={handleSend} disabled={textInput === ''} >Send</button>
+        <button className='chatbox__send-button btn'
+          onClick={handleSend}
+          disabled={textInput === ''}>
+          Send
+        </button>
       </div>
     </div>
   )

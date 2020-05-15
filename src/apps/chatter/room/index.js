@@ -9,8 +9,9 @@ import Helmet from '@app-elements/helmet'
 import LoadingIndicator from '@app-elements/loading-indicator'
 import { Link } from '@app-elements/router'
 import { useRequest } from '@app-elements/use-request'
-import { ChatBox } from '../components/chatbox'
 import React from 'react'
+
+import { ChatBox } from '../components/chatbox'
 
 // `url` is a util for getting route paths by name. It's a project
 // level util because it reads the statically defined [routes.js](/routes.html)

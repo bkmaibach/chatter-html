@@ -1,5 +1,6 @@
-import url from '/util/url'
 import { useRef, useEffect, useState } from 'react'
+
+import url from '/util/url'
 import { getState } from '/store'
 
 export function useRoom (roomId) {
@@ -13,6 +14,9 @@ export function useRoom (roomId) {
 
   useEffect(() => {
     connect()
+    return () => {
+      socketRef.current.close()
+    }
   }, [])
 
   const connect = () => {
@@ -36,7 +40,7 @@ export function useRoom (roomId) {
   }
 
   const onNewDataIn = (data) => {
-    console.log('DATA IN: ', { data })
+    // console.log('DATA IN: ', { data })
     const parsedData = JSON.parse(data)
     const command = parsedData.command
     if (command === NEW_MESSAGE) {
@@ -52,14 +56,14 @@ export function useRoom (roomId) {
   }
 
   const onFetchMessages = (parsedData) => {
-    console.log('RECEIVED NEW MESSAGES COMMAND: ', parsedData)
+    // console.log('RECEIVED NEW MESSAGES COMMAND: ', parsedData)
     setMessages(parsedData.messages.reverse())
   }
 
   // Functions for sending output to the server
   const initChatUser = () => {
     const { token } = getState()
-    console.log('INITIALIZING USER WITH TOKEN: ', token)
+    // console.log('INITIALIZING USER WITH TOKEN: ', token)
     sendCommand({
       command: INIT_CHAT,
       token
@@ -68,7 +72,7 @@ export function useRoom (roomId) {
 
   const sendFetchCommand = () => {
     const { token } = getState()
-    console.log('SENDING FETCH COMMAND WITH TOKEN: ', token)
+    // console.log('SENDING FETCH COMMAND WITH TOKEN: ', token)
     sendCommand({
       command: FETCH_MESSAGES,
       token
@@ -77,7 +81,7 @@ export function useRoom (roomId) {
 
   const sendNewMessage = (text) => {
     const { token } = getState()
-    console.log('SENDING NEW MESSAGE WITH TOKEN: ', token)
+    // console.log('SENDING NEW MESSAGE WITH TOKEN: ', token)
     sendCommand({
       command: NEW_MESSAGE,
       text,
