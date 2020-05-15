@@ -50,9 +50,9 @@ export function Room ({ id }) {
           { property: 'og:url', content: `${WEB_URL}${url('api.room', { args: { id } })}` }
         ]}
       />
+      <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
       <h1>{name}</h1>
       <ChatBox roomId={id} />
-      <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
     </div>
   )
 }

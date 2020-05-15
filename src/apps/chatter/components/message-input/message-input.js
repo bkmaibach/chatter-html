@@ -38,9 +38,9 @@ export const MessageInput = ({ onSend }) => {
   }
 
   return (
-    <div className='chatbox__input-row'>
+    <div className='message-input__input-row'>
       <input
-        id='chatbox__message-input'
+        id='message-input__text-input'
         ref={inputRef}
         type='text'
         size='100'
@@ -50,7 +50,7 @@ export const MessageInput = ({ onSend }) => {
       />
 
       <button
-        className='chatbox__send-button btn'
+        className='message-input__send-button btn'
         onClick={send}
         disabled={textInput === ''}
       >

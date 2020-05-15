@@ -4,6 +4,8 @@ import { useMappedState } from '@app-elements/use-mapped-state'
 
 import './global-header.less'
 
+import { logout } from '/store'
+
 function GlobalHeader () {
   const clicks = useMappedState(
     this.context.store,
@@ -31,7 +33,7 @@ function GlobalHeader () {
           fullName='John Smith'
         />
       </div>
-
+      <button onClick={ev => logout()}>Logout</button>
     </div>
   </header>
 }
