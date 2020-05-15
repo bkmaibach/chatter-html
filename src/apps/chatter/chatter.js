@@ -5,7 +5,7 @@ import { getState } from '/store'
 import { routes } from './index'
 
 const ChatterFooter = () =>
-  <footer className='container' style={'height: 24px'} />
+  <footer className='container' style={'height: 100px'} />
 
 export function ChatterApp () {
   const { token, currentPath } = getState()

@@ -6,18 +6,8 @@ export const MessageInput = ({ onSend }) => {
   const [textInput, setTextInput] = useState('')
   const inputRef = useRef(null)
 
-  const scheduleScroll = () => {
-    console.log('Executing scroll')
-    // Request for comments
-    // Cant execute a scroll outright because new messages seem to
-    // appear after everything, so the offsetTop or scroll height
-    // can't be properly obtained for this action
-    setTimeout(() => window.scrollTo(0, (inputRef.current.offsetTop)), 100)
-  }
-
   useEffect(() => {
     inputRef.current && inputRef.current.focus()
-    scheduleScroll()
   }, [])
 
   const handleKeyUp = (e) => {
@@ -30,7 +20,6 @@ export const MessageInput = ({ onSend }) => {
     onSend(textInput)
     inputRef.current && inputRef.current.focus()
     setTextInput('')
-    scheduleScroll()
   }
 
   const handleInputChange = (e) => {
@@ -39,11 +28,12 @@ export const MessageInput = ({ onSend }) => {
 
   return (
     <div className='message-input__input-row'>
-      <input
+      <textarea
         id='message-input__text-input'
         ref={inputRef}
         type='text'
-        size='100'
+        rows={5}
+        placeholder={'Type a message here...'}
         value={textInput}
         onChange={handleInputChange}
         onKeyUp={handleKeyUp}
