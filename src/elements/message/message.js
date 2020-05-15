@@ -1,4 +1,3 @@
-import React from 'react'
 import Linkifier from 'react-linkifier'
 
 import './message.less'

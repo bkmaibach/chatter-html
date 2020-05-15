@@ -9,7 +9,6 @@ import Helmet from '@app-elements/helmet'
 import LoadingIndicator from '@app-elements/loading-indicator'
 import { Link } from '@app-elements/router'
 import { useRequest } from '@app-elements/use-request'
-import React from 'react'
 
 import { ChatBox } from '../components/chatbox'
 

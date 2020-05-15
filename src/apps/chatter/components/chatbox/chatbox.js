@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import { Message } from '/elements/message'
 import { useRoom } from '/apps/chatter/hooks/use-room'
@@ -10,14 +10,13 @@ export const ChatBox = ({ roomId }) => {
   const inputEl = useRef(null)
 
   useEffect(() => {
-    inputEl.current.focus()
+    inputEl.current && inputEl.current.focus()
   }, [messages])
 
   const handleSend = () => {
     console.log('sending')
     sendNewMessage(textInput)
     setTextInput('')
-    inputEl.current.focus()
   }
 
   const handleKeyUp = (e) => {
@@ -36,7 +35,8 @@ export const ChatBox = ({ roomId }) => {
       {messages.map(Message)}
 
       <div className='chatbox__input-row'>
-        <input id='chatbox__message-input'
+        <input
+          id='chatbox__message-input'
           ref={inputEl}
           type='text'
           size='100'
@@ -45,9 +45,11 @@ export const ChatBox = ({ roomId }) => {
           onKeyUp={handleKeyUp}
         />
 
-        <button className='chatbox__send-button btn'
+        <button
+          className='chatbox__send-button btn'
           onClick={handleSend}
-          disabled={textInput === ''}>
+          disabled={textInput === ''}
+        >
           Send
         </button>
       </div>
