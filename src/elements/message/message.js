@@ -1,15 +1,19 @@
+import Linkifier from 'react-linkifier'
+
 import './message.less'
-// import React, { useState, useEffect, useRef } from 'react'
-import React from 'react'
-// import url from '/util/url'
-export const Message = ({ content, timestamp, author }) => {
+
+export const Message = ({ text, timestamp, author }) => {
+  // console.log('RENDERING MESSAGE')
   return (
-    <div className='message'>
-      <div className='message__content'>
-        {content}
-      </div>
-      <div className='message__stamp'>
-        <small>{author} - {timestamp}</small>
+    <div className='message__container--outer'>
+      <h4 className='message__author'>{author} says:</h4>
+      <div className='message__container--inner'>
+        <div className='message__content'>
+          <Linkifier>{text}</Linkifier>
+        </div>
+        <div className='message__stamp'>
+          <small>{timestamp}</small>
+        </div>
       </div>
     </div>
   )

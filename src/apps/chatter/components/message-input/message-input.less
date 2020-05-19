@@ -1,0 +1,34 @@
+.message-input__input-row {
+  position: fixed;
+  bottom: 20px;
+  left: 20%;
+  right: 25%;
+  z-index: 100;
+  height: 100px;
+  display: flex;
+  width: 60%;
+
+  textarea {
+    width: 100%;
+    padding: .65em .75rem;
+    border: none;
+    outline: none;
+    border: 1px solid @border-color;
+    border-radius: @border-radius;
+    background-color: @white;
+    font-size: 1rem;
+    font-family: @font-family;
+    -webkit-appearance: none;
+    color: @text-color;
+    font-weight: normal;
+    resize: none;
+
+    &:focus {
+        border: 1px solid @secondary-color;
+    }
+  }
+}
+
+.message-input__send-button {
+  margin: 3px 3px 3px 8px;
+}

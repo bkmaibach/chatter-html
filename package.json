@@ -65,6 +65,7 @@
     "polka": "0.5.2",
     "preact": "10.3.4",
     "prop-types": "15.7.2",
+    "react-linkifier": "4.0.0",
     "sirv": "0.4.2",
     "wasmuth": "2.0.6"
   },

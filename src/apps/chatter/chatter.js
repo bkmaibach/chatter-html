@@ -1,14 +1,11 @@
-import Router, { RouteTo, Link } from '@app-elements/router'
+import Router, { RouteTo } from '@app-elements/router'
 import { showNotification } from '@app-elements/notification'
 
-import { getState, logout } from '/store'
+import { getState } from '/store'
 import { routes } from './index'
 
 const ChatterFooter = () =>
-  <header className='container'>
-    <Link name='rooms'>Rooms</Link>&nbsp;
-    <button onClick={ev => logout()}>Logout</button>
-  </header>
+  <footer className='container' style={'height: 100px'} />
 
 export function ChatterApp () {
   const { token, currentPath } = getState()

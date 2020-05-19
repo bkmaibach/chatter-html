@@ -53,6 +53,8 @@ export default {
         'node_modules/process-es6/**'
       ],
       include: [
+        'node_modules/react-linkifier/**',
+        // 'node_modules/react-linkify/**',
         'node_modules/preact/**',
         'node_modules/prop-types/**',
         'node_modules/react-is/**',
