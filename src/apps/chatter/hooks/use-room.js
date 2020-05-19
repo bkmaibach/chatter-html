@@ -4,7 +4,7 @@ import url from '/util/url'
 import { getState } from '/store'
 
 export function useRoom (roomId) {
-  const [messages, setEntries] = useState([])
+  const [entries, setEntries] = useState([])
   const socketRef = useRef()
 
   const NEW_ENTRY = 'NEW_ENTRY'
@@ -79,7 +79,7 @@ export function useRoom (roomId) {
     })
   }
 
-  const sendNewMessage = (text) => {
+  const sendNewEntry = (text) => {
     const { token } = getState()
     // console.log('SENDING NEW MESSAGE WITH TOKEN: ', token)
     sendMessage({
@@ -93,9 +93,9 @@ export function useRoom (roomId) {
     try {
       socketRef.current.send(JSON.stringify({ command, text, token }))
     } catch (err) {
-      console.log(err.entry)
+      console.log(err.message)
     }
   }
 
-  return [messages, sendNewMessage]
+  return [entries, sendNewEntry]
 }
