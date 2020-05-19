@@ -1,1 +1,1 @@
-export { Entry } from './Entry'
+export { Entry } from './entry'
