@@ -29,7 +29,7 @@ export default function ResetPassword ({ resetToken, userId }) {
     onFailure: ({ err }) => {
       console.error('PasswordReset', { err })
       showNotification({
-        message: err.message || 'Could not reset password.'
+        message: err.entry || 'Could not reset password.'
       })
       routeTo(url('forgotPassword'))
     }

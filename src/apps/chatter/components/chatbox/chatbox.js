@@ -1,27 +1,27 @@
 import { useEffect } from 'react'
 
-import { Message } from '/elements/message'
+import { Entry } from '/elements/entry'
 import { useRoom } from '/apps/chatter/hooks/use-room'
-import { MessageInput } from '../message-input'
+import { EntryInput } from '../entry-input'
 import './chatbox.less'
 
 export const ChatBox = ({ roomId }) => {
-  const [messages, sendNewMessage] = useRoom(roomId)
+  const [entries, sendNewEntry] = useRoom(roomId)
 
   const handleSend = (text) => {
     console.log('sending')
-    sendNewMessage(text)
+    sendNewEntry(text)
   }
 
   useEffect(() => {
     console.log('SCROLLING NOW')
     window.scrollTo(0, document.body.scrollHeight)
-  }, [messages])
+  }, [entries])
 
   return (
     <div className='chatbox'>
-      {messages.map(Message)}
-      <MessageInput
+      {entries.map(Entry)}
+      <EntryInput
         onSend={handleSend}
       />
     </div>
