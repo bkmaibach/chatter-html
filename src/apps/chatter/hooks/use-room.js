@@ -3,23 +3,28 @@ import { useRef, useEffect, useState } from 'react'
 import url from '/util/url'
 import { getState } from '/store'
 
-export function useRoom (roomId) {
+export function useRoom (roomId, password) {
   const [entries, setEntries] = useState([])
+  const [isAuthorized, setIsAuthorized] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
   const socketRef = useRef()
 
   const NEW_ENTRY = 'NEW_ENTRY'
   const INIT_CHAT = 'INIT_CHAT'
   const FETCH_ENTRIES = 'FETCH_ENTRIES'
   const ENTRIES = 'ENTRIES'
+  const INIT_RESPONSE = 'INIT_RESPONSE'
 
   useEffect(() => {
+    console.log('USING EFFECT SUBJECT TO PASSWORD: ', password)
     connect()
     return () => {
       socketRef.current.close()
     }
-  }, [])
+  }, [password])
 
   const connect = () => {
+    console.log('CONNECTING, HAVE PASSWORD: ', password)
     const socketUrl = url('api_ws.chatSocket', { args: { id: roomId } })
     socketRef.current = new window.WebSocket(socketUrl)
     socketRef.current.onopen = () => {
@@ -34,38 +39,47 @@ export function useRoom (roomId) {
       console.log(e.entry)
     }
     socketRef.current.onclose = () => {
-      console.log('WebSocket closed let\'s reopen')
-      connect()
+      console.log('WebSocket closed')
+      // connect()
     }
   }
 
-  const onNewMessage = (data) => {
+  const onNewMessage = (messageString) => {
     // console.log('DATA IN: ', { data })
-    const parsedData = JSON.parse(data)
-    const command = parsedData.command
+    const parsedMessage = JSON.parse(messageString)
+    const command = parsedMessage.command
     if (command === NEW_ENTRY) {
-      onNewEntry(parsedData)
+      onNewEntry(parsedMessage)
     } else if (command === ENTRIES) {
-      onFetchEntries(parsedData)
+      onFetchEntries(parsedMessage)
+    } else if (command === INIT_RESPONSE) {
+      onInitRespose(parsedMessage)
     }
   }
 
   // Functions called upon input from the server
-  const onNewEntry = (parsedData) => {
-    setEntries((previous) => ([...previous, parsedData.entry]))
+  const onNewEntry = (parsedMessage) => {
+    setEntries((previous) => ([...previous, parsedMessage.entry]))
   }
 
-  const onFetchEntries = (parsedData) => {
-    // console.log('RECEIVED NEW MESSAGES COMMAND: ', parsedData)
-    setEntries(parsedData.entries.reverse())
+  const onFetchEntries = (parsedMessage) => {
+    // console.log('RECEIVED NEW MESSAGES COMMAND: ', parsedMessage)
+    setEntries(parsedMessage.entries.reverse())
+  }
+
+  const onInitRespose = (parsedMessage) => {
+    console.log('RECEIVED INIT RESPONSE COMMAND: ', parsedMessage)
+    setIsAuthorized(parsedMessage.authorized)
+    setIsInitialized(true)
   }
 
   // Functions for sending output to the server
   const initChatUser = () => {
     const { token } = getState()
-    // console.log('INITIALIZING USER WITH TOKEN: ', token)
+    console.log('INITIALIZING CHAT WITH PASSWORD: ', password)
     sendMessage({
       command: INIT_CHAT,
+      password,
       token
     })
   }
@@ -75,6 +89,7 @@ export function useRoom (roomId) {
     // console.log('SENDING FETCH COMMAND WITH TOKEN: ', token)
     sendMessage({
       command: FETCH_ENTRIES,
+      password,
       token
     })
   }
@@ -84,18 +99,20 @@ export function useRoom (roomId) {
     // console.log('SENDING NEW MESSAGE WITH TOKEN: ', token)
     sendMessage({
       command: NEW_ENTRY,
+      password,
       text,
       token
     })
   }
 
-  const sendMessage = ({ command, text, token }) => {
+  const sendMessage = (message) => {
+    console.log('SENDING MESSAGE ', message)
     try {
-      socketRef.current.send(JSON.stringify({ command, text, token }))
+      socketRef.current.send(JSON.stringify(message))
     } catch (err) {
       console.log(err.message)
     }
   }
 
-  return [entries, sendNewEntry]
+  return [entries, sendNewEntry, isAuthorized, isInitialized]
 }
