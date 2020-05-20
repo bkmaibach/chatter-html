@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 
-import './message-input.less'
+import './entry-input.less'
 
-export const MessageInput = ({ onSend }) => {
+export const EntryInput = ({ onSend }) => {
   const [textInput, setTextInput] = useState('')
   const inputRef = useRef(null)
 
@@ -27,9 +27,9 @@ export const MessageInput = ({ onSend }) => {
   }
 
   return (
-    <div className='message-input__input-row'>
+    <div className='entry-input__input-row'>
       <textarea
-        id='message-input__text-input'
+        id='entry-input__text-input'
         ref={inputRef}
         type='text'
         rows={5}
@@ -40,7 +40,7 @@ export const MessageInput = ({ onSend }) => {
       />
 
       <button
-        className='message-input__send-button btn'
+        className='entry-input__send-button btn'
         onClick={send}
         disabled={textInput === ''}
       >
