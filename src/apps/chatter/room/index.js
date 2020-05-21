@@ -28,6 +28,7 @@ import { WEB_URL } from '/consts'
 // Here is our page component which will use the `useRequest` hook.
 export function Room ({ id }) {
   const [password, setPassword] = useState('')
+  // const [wasBadPassword, setWasBadPassword] = useState(false)
   const [passwordInput, setPasswordInput] = useState('')
   const [isCorrectPassword, isChecking] = useRoomPassword(id, password)
 
@@ -73,6 +74,7 @@ export function Room ({ id }) {
         ? <ChatBox roomId={id} password={password} />
         : <RoomPassword
           isChecking={isChecking}
+          showWrongPasswordMessage={!isCorrectPassword && password !== ''}
           passwordInput={passwordInput}
           handleInputChange={handleInputChange}
           handleSubmitPassword={handleSubmitPassword}
