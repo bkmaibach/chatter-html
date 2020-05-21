@@ -5,15 +5,11 @@ import { getState } from '/store'
 
 export function useRoom (roomId, password) {
   const [entries, setEntries] = useState([])
-  const [isAuthorized, setIsAuthorized] = useState(false)
-  const [isInitialized, setIsInitialized] = useState(false)
   const socketRef = useRef()
 
   const NEW_ENTRY = 'NEW_ENTRY'
-  const INIT_CHAT = 'INIT_CHAT'
   const FETCH_ENTRIES = 'FETCH_ENTRIES'
   const ENTRIES = 'ENTRIES'
-  const INIT_RESPONSE = 'INIT_RESPONSE'
 
   useEffect(() => {
     console.log('USING EFFECT SUBJECT TO PASSWORD: ', password)
@@ -29,7 +25,6 @@ export function useRoom (roomId, password) {
     socketRef.current = new window.WebSocket(socketUrl)
     socketRef.current.onopen = () => {
       console.log('WebSocket open to url ', socketUrl)
-      initChatUser()
       sendFetchCommand()
     }
     socketRef.current.onmessage = e => {
@@ -52,8 +47,6 @@ export function useRoom (roomId, password) {
       onNewEntry(parsedMessage)
     } else if (command === ENTRIES) {
       onFetchEntries(parsedMessage)
-    } else if (command === INIT_RESPONSE) {
-      onInitRespose(parsedMessage)
     }
   }
 
@@ -63,25 +56,8 @@ export function useRoom (roomId, password) {
   }
 
   const onFetchEntries = (parsedMessage) => {
-    // console.log('RECEIVED NEW MESSAGES COMMAND: ', parsedMessage)
+    console.log('RECEIVED NEW MESSAGES COMMAND: ', parsedMessage)
     setEntries(parsedMessage.entries.reverse())
-  }
-
-  const onInitRespose = (parsedMessage) => {
-    console.log('RECEIVED INIT RESPONSE COMMAND: ', parsedMessage)
-    setIsAuthorized(parsedMessage.authorized)
-    setIsInitialized(true)
-  }
-
-  // Functions for sending output to the server
-  const initChatUser = () => {
-    const { token } = getState()
-    console.log('INITIALIZING CHAT WITH PASSWORD: ', password)
-    sendMessage({
-      command: INIT_CHAT,
-      password,
-      token
-    })
   }
 
   const sendFetchCommand = () => {
@@ -114,5 +90,5 @@ export function useRoom (roomId, password) {
     }
   }
 
-  return [entries, sendNewEntry, isAuthorized, isInitialized]
+  return [entries, sendNewEntry]
 }

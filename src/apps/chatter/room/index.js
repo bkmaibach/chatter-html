@@ -5,11 +5,15 @@
 // We'll include Helmet for setting title and meta tags dynamically,
 // based on the result of our API request.
 // And we'll use the `useRequest` hook for requesting the resource data.
+import { useState } from 'react'
+
 import Helmet from '@app-elements/helmet'
 import LoadingIndicator from '@app-elements/loading-indicator'
 import { Link } from '@app-elements/router'
 import { useRequest } from '@app-elements/use-request'
 
+import { RoomPassword } from '../components/room-password'
+import { useRoomPassword } from '../hooks/use-room-password'
 import { ChatBox } from '../components/chatbox'
 
 // `url` is a util for getting route paths by name. It's a project
@@ -23,6 +27,19 @@ import { WEB_URL } from '/consts'
 
 // Here is our page component which will use the `useRequest` hook.
 export function Room ({ id }) {
+  const [password, setPassword] = useState('')
+  const [passwordInput, setPasswordInput] = useState('')
+  const [isCorrectPassword, isChecking] = useRoomPassword(id, password)
+
+  const handleInputChange = (e) => {
+    setPasswordInput(e.target.value)
+  }
+
+  const handleSubmitPassword = () => {
+    console.log('Setting password ', passwordInput, 'Correct? ', isCorrectPassword)
+    setPassword(passwordInput)
+  }
+
   const { result, error, isLoading } = useRequest(store, url('api.room', { args: { id } }))
 
   if (isLoading) {
@@ -35,7 +52,7 @@ export function Room ({ id }) {
       : <div><p>Something went wrong!</p></div>
   }
 
-  const { name } = result
+  const { name, hasPassword } = result
 
   return (
     <div key='user' className='container pt-7'>
@@ -52,7 +69,14 @@ export function Room ({ id }) {
       />
       <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
       <h1>{name}</h1>
-      <ChatBox roomId={id} />
+      {(isCorrectPassword || !hasPassword)
+        ? <ChatBox roomId={id} password={password} />
+        : <RoomPassword
+          isChecking={isChecking}
+          passwordInput={passwordInput}
+          handleInputChange={handleInputChange}
+          handleSubmitPassword={handleSubmitPassword}
+        />}
     </div>
   )
 }

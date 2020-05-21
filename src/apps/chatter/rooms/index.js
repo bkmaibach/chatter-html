@@ -8,9 +8,9 @@ import store, { dispatch, clearRequest } from '/store'
 import url from '/util/url'
 import './rooms.less'
 
-const RoomItem = ({ id, name }) => (
+const RoomItem = ({ id, name, hasPassword }) => (
   <div class='room-item'>
-    <h3><Link name='room' args={{ id }}>{name}</Link></h3>
+    <h3><Link name='room' args={{ id }}>{name}</Link> {hasPassword && '(password required)'}</h3>
   </div>
 )
 
@@ -40,7 +40,7 @@ export const Rooms = () => {
       console.error('onFailure', { err })
     }
   }
-
+  console.log('RESULTS: ', { result })
   return (
     <div className='container pt-7 pb-4'>
       {result.results.map(RoomItem)}
