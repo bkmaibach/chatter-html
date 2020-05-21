@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 
 import url from '/util/url'
-import { getState } from '/store'
+import { getState, dispatch } from '/store'
 
 export function useRoomPassword (roomId, password) {
   console.log('USING ROOM PASSWORD!', roomId, password)
@@ -26,7 +26,9 @@ export function useRoomPassword (roomId, password) {
     socketRef.current = new window.WebSocket(socketUrl)
     socketRef.current.onopen = () => {
       console.log('WebSocket open to url ', socketUrl)
-      checkPassword()
+      if (password !== '') {
+        checkPassword()
+      }
     }
     socketRef.current.onmessage = e => {
       // console.log('DATA IN: ', { data })
@@ -36,6 +38,9 @@ export function useRoomPassword (roomId, password) {
         console.log('RECEIVED INIT RESPONSE COMMAND: ', parsedMessage)
         setIsChecking(false)
         setIsCorrectPassword(parsedMessage.authorized)
+        if (parsedMessage.authorized) {
+          dispatch({ type: 'SET_ROOM_PASSWORD', roomId, password })
+        }
       }
     }
     socketRef.current.onerror = e => {

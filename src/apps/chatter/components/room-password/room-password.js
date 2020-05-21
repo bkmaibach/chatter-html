@@ -9,8 +9,8 @@ export const RoomPassword = ({
   handleSubmitPassword,
   isChecking,
   showWrongPasswordMessage
-}) => (
-  <Modal className='styled-modal small'>
+}) => {
+  return <Modal className='styled-modal small'>
     <div className='modal-header'>
       <h2>Please enter the password</h2>
     </div>
@@ -24,6 +24,8 @@ export const RoomPassword = ({
             placeholder='Enter password...'
             value={passwordInput}
             onChange={handleInputChange}
+            onEnterUp={handleSubmitPassword}
+            focus
           />
           {showWrongPasswordMessage && <h2>Sorry! wrong password</h2>}
           <button
@@ -35,4 +37,4 @@ export const RoomPassword = ({
       }
     </div>
   </Modal>
-)
+}

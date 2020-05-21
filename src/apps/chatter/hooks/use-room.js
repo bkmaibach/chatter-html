@@ -89,6 +89,5 @@ export function useRoom (roomId, password) {
       console.log(err.message)
     }
   }
-
   return [entries, sendNewEntry]
 }

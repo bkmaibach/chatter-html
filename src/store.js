@@ -10,6 +10,7 @@ import pathReducer, { actions } from '@wasmuth/path-reducer'
 import { requestsReducer, actions as requestActions } from '@app-elements/use-request/reducer'
 
 import { DEBUG } from '/consts'
+import { roomPasswords } from './apps/chatter/reducers/room-passwords.js'
 
 // Load state set by react-snap during prerendering
 const preloadedState = window.__PRELOADED_STATE__
@@ -37,7 +38,8 @@ export const initialState = {
 // `store.addReducer(reducer)`
 const reducers = [
   pathReducer,
-  requestsReducer
+  requestsReducer,
+  roomPasswords
 ]
 
 // If DEBUG is true, we will enable Redux devtools

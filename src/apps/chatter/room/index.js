@@ -5,7 +5,7 @@
 // We'll include Helmet for setting title and meta tags dynamically,
 // based on the result of our API request.
 // And we'll use the `useRequest` hook for requesting the resource data.
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import Helmet from '@app-elements/helmet'
 import LoadingIndicator from '@app-elements/loading-indicator'
@@ -21,7 +21,7 @@ import { ChatBox } from '../components/chatbox'
 import url from '/util/url'
 
 // We'll need to pass our store to `useRequest`
-import store from '/store'
+import store, { getState } from '/store'
 
 import { WEB_URL } from '/consts'
 
@@ -29,7 +29,8 @@ import { WEB_URL } from '/consts'
 export function Room ({ id }) {
   const [password, setPassword] = useState('')
   // const [wasBadPassword, setWasBadPassword] = useState(false)
-  const [passwordInput, setPasswordInput] = useState('')
+  const [passwordInput, setPasswordInput] = useState(null)
+  const [passwordWasSaved, setPasswordWasSaved] = useState(false)
   const [isCorrectPassword, isChecking] = useRoomPassword(id, password)
 
   const handleInputChange = (e) => {
@@ -40,6 +41,20 @@ export function Room ({ id }) {
     console.log('Setting password ', passwordInput, 'Correct? ', isCorrectPassword)
     setPassword(passwordInput)
   }
+
+  useEffect(() => {
+    if (typeof getState().roomPasswords !== 'undefined') {
+      const passwords = getState().roomPasswords
+      console.log('STATE HOLDS: ', { passwords })
+      if (typeof passwords[id] !== 'undefined') {
+        setPassword(passwords[id])
+        // This state variable prevents the modal from flashing
+        // on the screen when not necessary, because the correct
+        // password is in the store
+        setPasswordWasSaved(true)
+      }
+    }
+  }, [])
 
   const { result, error, isLoading } = useRequest(store, url('api.room', { args: { id } }))
 
@@ -53,7 +68,7 @@ export function Room ({ id }) {
       : <div><p>Something went wrong!</p></div>
   }
 
-  const { name, hasPassword } = result
+  const { name, hasPassword: passwordRequired } = result
 
   return (
     <div key='user' className='container pt-7'>
@@ -70,15 +85,15 @@ export function Room ({ id }) {
       />
       <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
       <h1>{name}</h1>
-      {(isCorrectPassword || !hasPassword)
-        ? <ChatBox roomId={id} password={password} />
-        : <RoomPassword
+      {(!isCorrectPassword && passwordRequired && !passwordWasSaved)
+        ? <RoomPassword
           isChecking={isChecking}
           showWrongPasswordMessage={!isCorrectPassword && password !== ''}
           passwordInput={passwordInput}
           handleInputChange={handleInputChange}
           handleSubmitPassword={handleSubmitPassword}
-        />}
+        />
+        : <ChatBox roomId={id} password={password} />}
     </div>
   )
 }
