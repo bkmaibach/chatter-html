@@ -1,12 +1,10 @@
 import { useEffect } from 'react'
 
 import { Entry } from '/elements/entry'
-import { useRoom } from '/apps/chatter/hooks/use-room'
 import { EntryInput } from '../entry-input'
 import './chatbox.less'
 
-export const ChatBox = ({ roomId, password }) => {
-  const [entries, sendNewEntry] = useRoom(roomId, password)
+export const ChatBox = ({ roomId, password, entries, sendNewEntry }) => {
 
   const handleSend = (text) => {
     console.log('sending')

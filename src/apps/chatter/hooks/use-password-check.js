@@ -3,7 +3,7 @@ import { useRef, useEffect, useState } from 'react'
 import url from '/util/url'
 import { getState, dispatch } from '/store'
 
-export function useRoomPassword (roomId, password) {
+export function usePasswordCheck (roomId, password) {
   console.log('USING ROOM PASSWORD!', roomId, password)
   const [isCorrectPassword, setIsCorrectPassword] = useState(false)
   const [isChecking, setIsChecking] = useState(false)

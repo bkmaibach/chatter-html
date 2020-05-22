@@ -11,9 +11,11 @@ import Helmet from '@app-elements/helmet'
 import LoadingIndicator from '@app-elements/loading-indicator'
 import { Link } from '@app-elements/router'
 import { useRequest } from '@app-elements/use-request'
+import { useMappedState } from '@app-elements/use-mapped-state'
 
 import { RoomPassword } from '../components/room-password'
-import { useRoomPassword } from '../hooks/use-room-password'
+import { usePasswordCheck } from '../hooks/use-password-check'
+import { useRoom } from '/apps/chatter/hooks/use-room'
 import { ChatBox } from '../components/chatbox'
 
 // `url` is a util for getting route paths by name. It's a project
@@ -27,73 +29,38 @@ import { WEB_URL } from '/consts'
 
 // Here is our page component which will use the `useRequest` hook.
 export function Room ({ id }) {
-  const [password, setPassword] = useState('')
-  // const [wasBadPassword, setWasBadPassword] = useState(false)
-  const [passwordInput, setPasswordInput] = useState(null)
-  const [passwordWasSaved, setPasswordWasSaved] = useState(false)
-  const [isCorrectPassword, isChecking] = useRoomPassword(id, password)
-
-  const handleInputChange = (e) => {
-    setPasswordInput(e.target.value)
-  }
-
-  const handleSubmitPassword = () => {
-    console.log('Setting password ', passwordInput, 'Correct? ', isCorrectPassword)
-    setPassword(passwordInput)
-  }
-
-  useEffect(() => {
-    if (typeof getState().roomPasswords !== 'undefined') {
-      const passwords = getState().roomPasswords
-      console.log('STATE HOLDS: ', { passwords })
-      if (typeof passwords[id] !== 'undefined') {
-        setPassword(passwords[id])
-        // This state variable prevents the modal from flashing
-        // on the screen when not necessary, because the correct
-        // password is in the store
-        setPasswordWasSaved(true)
-      }
-    }
-  }, [])
+  const password = useMappedState(this.context.store, ({ roomPasswords }) => roomPasswords[id])
+  const { isLoading: roomIsLoading, passwordVerified, isReady, entries, sendNewEntry } = useRoom(id, password)
 
   const { result, error, isLoading } = useRequest(store, url('api.room', { args: { id } }))
+  const { name, hasPassword: passwordRequired } = result
 
   if (isLoading) {
     return <div className='container mt-2'><LoadingIndicator /></div>
-  }
-
-  if (error != null) {
+  } else if (error != null) {
     return error.code === 404
       ? <div><p>A chatroom with that name was not found!</p></div>
       : <div><p>Something went wrong!</p></div>
-  }
-
-  const { name, hasPassword: passwordRequired } = result
-
-  return (
-    <div key='user' className='container pt-7'>
-      <Helmet
-        title={name}
-        meta={[
-          { name: 'description', content: 'Helmet description' },
-          { property: 'og:type', content: 'article' },
-          { property: 'og:title', content: name },
-          { property: 'og:description', content: 'Helmet description' },
-          { property: 'og:image', content: 'https://www.gooseinsurance.com/images/blog-image-1.jpg' },
-          { property: 'og:url', content: `${WEB_URL}${url('api.room', { args: { id } })}` }
-        ]}
-      />
-      <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
-      <h1>{name}</h1>
-      {(!isCorrectPassword && passwordRequired && !passwordWasSaved)
-        ? <RoomPassword
-          isChecking={isChecking}
-          showWrongPasswordMessage={!isCorrectPassword && password !== ''}
-          passwordInput={passwordInput}
-          handleInputChange={handleInputChange}
-          handleSubmitPassword={handleSubmitPassword}
+  } else {
+    return (
+      <div key='user' className='container pt-7'>
+        <Helmet
+          title={name}
+          meta={[
+            { name: 'description', content: 'Helmet description' },
+            { property: 'og:type', content: 'article' },
+            { property: 'og:title', content: name },
+            { property: 'og:description', content: 'Helmet description' },
+            { property: 'og:image', content: 'https://www.gooseinsurance.com/images/blog-image-1.jpg' },
+            { property: 'og:url', content: `${WEB_URL}${url('api.room', { args: { id } })}` }
+          ]}
         />
-        : <ChatBox roomId={id} password={password} />}
-    </div>
-  )
+        <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
+        <h1>{name}</h1>
+        {roomIsLoading && <LoadingIndicator />}
+        {passwordRequired && !passwordVerified && <RoomPassword />}
+        {isReady && <ChatBox entries={entries} sendNewEntry={sendNewEntry} />}
+      </div>
+    )
+  }
 }

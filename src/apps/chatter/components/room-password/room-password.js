@@ -1,15 +1,22 @@
+import { useState } from 'react'
+
 import Modal from '@app-elements/modal'
 import LoadingIndicator from '@app-elements/loading-indicator'
 
 import { TextInput } from '/elements/text-input'
 
-export const RoomPassword = ({
-  passwordInput,
-  handleInputChange,
-  handleSubmitPassword,
-  isChecking,
-  showWrongPasswordMessage
-}) => {
+export function RoomPassword () {
+  const [passwordInput, setPasswordInput] = useState(null)
+
+  const handleInputChange = (e) => {
+    setPasswordInput(e.target.value)
+  }
+
+  const handleSubmitPassword = () => {
+    console.log('Setting password ', passwordInput, 'Correct? ', isCorrectPassword)
+    setPassword(passwordInput)
+  }
+
   return <Modal className='styled-modal small'>
     <div className='modal-header'>
       <h2>Please enter the password</h2>
@@ -37,4 +44,5 @@ export const RoomPassword = ({
       }
     </div>
   </Modal>
+
 }
