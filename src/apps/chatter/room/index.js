@@ -5,7 +5,6 @@
 // We'll include Helmet for setting title and meta tags dynamically,
 // based on the result of our API request.
 // And we'll use the `useRequest` hook for requesting the resource data.
-import { useState, useEffect } from 'react'
 
 import Helmet from '@app-elements/helmet'
 import LoadingIndicator from '@app-elements/loading-indicator'
@@ -14,7 +13,6 @@ import { useRequest } from '@app-elements/use-request'
 import { useMappedState } from '@app-elements/use-mapped-state'
 
 import { RoomPassword } from '../components/room-password'
-import { usePasswordCheck } from '../hooks/use-password-check'
 import { useRoom } from '/apps/chatter/hooks/use-room'
 import { ChatBox } from '../components/chatbox'
 
@@ -23,17 +21,30 @@ import { ChatBox } from '../components/chatbox'
 import url from '/util/url'
 
 // We'll need to pass our store to `useRequest`
-import store, { getState } from '/store'
+import store from '/store'
 
 import { WEB_URL } from '/consts'
 
 // Here is our page component which will use the `useRequest` hook.
 export function Room ({ id }) {
-  const password = useMappedState(this.context.store, ({ roomPasswords }) => roomPasswords[id])
-  const { isLoading: roomIsLoading, passwordVerified, isReady, entries, sendNewEntry } = useRoom(id, password)
-
   const { result, error, isLoading } = useRequest(store, url('api.room', { args: { id } }))
+  const password = useMappedState(store, ({ roomPasswords }) => roomPasswords[id])
+  if (isLoading) {
+    console.log('Loading room info...')
+    return <div className='container mt-2'><LoadingIndicator /></div>
+  }
+  if (error) {
+    return <div>Error!</div>
+  }
   const { name, hasPassword: passwordRequired } = result
+  console.log('CALLING WITH PASSWORD', password)
+  const {
+    isLoading: roomIsLoading,
+    passwordIsVerified,
+    isWrongPassword,
+    entries,
+    sendNewEntry
+  } = useRoom(id, password)
 
   if (isLoading) {
     return <div className='container mt-2'><LoadingIndicator /></div>
@@ -58,8 +69,14 @@ export function Room ({ id }) {
         <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
         <h1>{name}</h1>
         {roomIsLoading && <LoadingIndicator />}
-        {passwordRequired && !passwordVerified && <RoomPassword />}
-        {isReady && <ChatBox entries={entries} sendNewEntry={sendNewEntry} />}
+        {passwordRequired && !passwordIsVerified && <RoomPassword
+          roomId={id}
+          showWrongPasswordMessage={isWrongPassword}
+        />}
+        {!roomIsLoading && <ChatBox
+          entries={entries}
+          sendNewEntry={sendNewEntry}
+        />}
       </div>
     )
   }

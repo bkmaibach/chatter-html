@@ -6,9 +6,9 @@ import { getState } from '/store'
 export function useRoom (roomId, password) {
   const [entries, setEntries] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-  const [isReady, setIsReady] = useState(false)
   const [isError, setIsError] = useState(false)
-  const [passwordVerified, setIsVerified] = useState(false)
+  const [isWrongPassword, setIsWrongPassword] = useState(false)
+  const [passwordIsVerified, setIsVerified] = useState(false)
   const socketRef = useRef()
 
   // API commands
@@ -23,15 +23,9 @@ export function useRoom (roomId, password) {
     setIsLoading(true)
     const socketUrl = url('api_ws.chatSocket', { args: { id: roomId } })
     socketRef.current = new window.WebSocket(socketUrl)
-    socketRef.current.onmessage(e => {
-      onNewMessage(e.data)
-    })
     socketRef.current.onerror = e => {
       setIsError(true)
-      console.log(e.entry)
-    }
-    socketRef.current.onopen = () => {
-      setIsLoading(false)
+      console.log(e)
     }
     return () => {
       socketRef.current.close()
@@ -40,18 +34,19 @@ export function useRoom (roomId, password) {
 
   useEffect(() => {
     console.log('USING EFFECT SUBJECT TO PASSWORD: ', password)
-    if (this.socketRef.readyState) {
+    socketRef.current.onmessage = e => {
+      onNewMessage(e.data)
+    }
+    if (socketRef.current.readyState) {
       checkPassword()
     } else {
-      socketRef.current.onopen = () => {
-        setIsLoading(false)
-        checkPassword()
-      }
+      socketRef.current.onopen = checkPassword
     }
   }, [password])
 
   const onNewMessage = (messageString) => {
-    // console.log('DATA IN: ', { data })
+    console.log('ON NEW MESSAGE: ', { messageString })
+    console.log('USING CALLBACK WITH PASSWORD STATE: ', password)
     const parsedMessage = JSON.parse(messageString)
     const command = parsedMessage.command
     if (command === NEW_ENTRY) {
@@ -59,7 +54,7 @@ export function useRoom (roomId, password) {
     } else if (command === ENTRIES) {
       onFetchEntries(parsedMessage)
     } else if (command === INIT_RESPONSE) {
-      onPasswordVerified(parsedMessage)
+      onInitResponse(parsedMessage)
     }
   }
 
@@ -81,20 +76,22 @@ export function useRoom (roomId, password) {
 
   const onFetchEntries = (parsedMessage) => {
     console.log('RECEIVED NEW MESSAGES COMMAND: ', parsedMessage)
-    setIsReady(true)
+    setIsLoading(false)
     setEntries(parsedMessage.entries.reverse())
   }
 
-  const onPasswordVerified = (parsedMessage) => {
+  const onInitResponse = (parsedMessage) => {
+    console.log('onInitResponse with, ', { parsedMessage })
     setIsVerified(parsedMessage.authorized)
-    if (passwordVerified) {
+    setIsWrongPassword(!parsedMessage.authorized && password != null)
+    if (parsedMessage.authorized) {
       sendFetchCommand()
     }
   }
 
   const sendFetchCommand = () => {
     const { token } = getState()
-    // console.log('SENDING FETCH COMMAND WITH TOKEN: ', token)
+    console.log('SENDING FETCH COMMAND WITH PASSWORD: ', password)
     sendMessage({
       command: FETCH_ENTRIES,
       password,
@@ -114,7 +111,6 @@ export function useRoom (roomId, password) {
   }
 
   const sendMessage = (message) => {
-
     console.log('SENDING MESSAGE ', message)
     try {
       socketRef.current.send(JSON.stringify(message))
@@ -124,5 +120,5 @@ export function useRoom (roomId, password) {
     }
   }
 
-  return { isLoading, isReady, isError, passwordVerified, entries, sendNewEntry }
+  return { isLoading, isError, passwordIsVerified, isWrongPassword, entries, sendNewEntry }
 }

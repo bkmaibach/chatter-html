@@ -1,11 +1,11 @@
 import { useState } from 'react'
 
 import Modal from '@app-elements/modal'
-import LoadingIndicator from '@app-elements/loading-indicator'
 
 import { TextInput } from '/elements/text-input'
+import { dispatch } from '/store'
 
-export function RoomPassword () {
+export function RoomPassword ({ roomId, showWrongPasswordMessage }) {
   const [passwordInput, setPasswordInput] = useState(null)
 
   const handleInputChange = (e) => {
@@ -13,8 +13,8 @@ export function RoomPassword () {
   }
 
   const handleSubmitPassword = () => {
-    console.log('Setting password ', passwordInput, 'Correct? ', isCorrectPassword)
-    setPassword(passwordInput)
+    console.log('DISPATCHING SET_ROOM_PASSWORD')
+    dispatch({ type: 'SET_ROOM_PASSWORD', roomId, password: passwordInput })
   }
 
   return <Modal className='styled-modal small'>
@@ -23,26 +23,23 @@ export function RoomPassword () {
     </div>
 
     <div className='actions centered'>
-      {isChecking
-        ? <LoadingIndicator />
-        : <div className='room-password'>
-          <TextInput
-            name='password'
-            placeholder='Enter password...'
-            value={passwordInput}
-            onChange={handleInputChange}
-            onEnterUp={handleSubmitPassword}
-            focus
-          />
-          {showWrongPasswordMessage && <h2>Sorry! wrong password</h2>}
-          <button
-            className='btn'
-            onClick={handleSubmitPassword}
-            disabled={passwordInput === ''}
-          >Submit</button>
-        </div>
+      { <div className='room-password'>
+        <TextInput
+          name='password'
+          placeholder='Enter password...'
+          value={passwordInput}
+          onChange={handleInputChange}
+          onEnterUp={handleSubmitPassword}
+          focus
+        />
+        {showWrongPasswordMessage && <h2>Sorry! wrong password</h2>}
+        <button
+          className='btn'
+          onClick={handleSubmitPassword}
+          disabled={passwordInput === ''}
+        >Submit</button>
+      </div>
       }
     </div>
   </Modal>
-
 }

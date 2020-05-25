@@ -4,8 +4,7 @@ import { Entry } from '/elements/entry'
 import { EntryInput } from '../entry-input'
 import './chatbox.less'
 
-export const ChatBox = ({ roomId, password, entries, sendNewEntry }) => {
-
+export const ChatBox = ({ entries, sendNewEntry }) => {
   const handleSend = (text) => {
     console.log('sending')
     sendNewEntry(text)
