@@ -72,10 +72,7 @@ export function Room ({ id }) {
         <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
         <h1>{name}</h1>
         {roomIsLoading && <LoadingIndicator />}
-        {passwordRequired && !isCorrect && <RoomPassword
-          roomId={id}
-          showWrongPasswordMessage={isCorrect === false}
-        />}
+        {passwordRequired && !isCorrect && <RoomPassword roomId={id} />}
         {!roomIsLoading && <ChatBox
           entries={entries}
           sendNewEntry={sendNewEntry}
