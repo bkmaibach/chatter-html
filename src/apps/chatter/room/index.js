@@ -28,19 +28,20 @@ import { WEB_URL } from '/consts'
 // Here is our page component which will use the `useRequest` hook.
 export function Room ({ id }) {
   const { result, error, isLoading } = useRequest(store, url('api.room', { args: { id } }))
-  const passwordObject = useMappedState(store, ({ roomPasswords }) => roomPasswords[id] || {})
+  const passwordObject = useMappedState(store,
+    ({ roomPasswords }) => roomPasswords[id] || {})
+  console.log('passwordObject', passwordObject)
   const password = passwordObject.password
   const isVerified = passwordObject.isVerified
-  // const isVerified = useMappedState(store, ({ roomPasswords }) => roomPasswords[id].isVerified)
   if (isLoading) {
-    console.log('Loading room info...')
+    // console.log('Loading room info...')
     return <div className='container mt-2'><LoadingIndicator /></div>
   }
   if (error) {
     return <div>Error!</div>
   }
   const { name, hasPassword: passwordRequired } = result
-  console.log('CALLING WITH PASSWORD', password)
+  // console.log('CALLING WITH PASSWORD', password)
   const {
     isLoading: roomIsLoading,
     entries,
@@ -54,7 +55,6 @@ export function Room ({ id }) {
       ? <div><p>A chatroom with that name was not found!</p></div>
       : <div><p>Something went wrong!</p></div>
   } else {
-    console.log('ISVERFIED IS ', isVerified)
     return (
       <div key='user' className='container pt-7'>
         <Helmet

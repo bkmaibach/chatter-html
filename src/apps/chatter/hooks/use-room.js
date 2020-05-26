@@ -16,7 +16,7 @@ export function useRoom (roomId, password) {
   const INIT_RESPONSE = 'INIT_RESPONSE'
 
   useEffect(() => {
-    console.log('CONNECTING')
+    // console.log('CONNECTING')
     setIsLoading(true)
     const socketUrl = url('api_ws.chatSocket', { args: { id: roomId } })
     socketRef.current = new window.WebSocket(socketUrl)
@@ -29,7 +29,7 @@ export function useRoom (roomId, password) {
   }, [])
 
   useEffect(() => {
-    console.log('USING EFFECT SUBJECT TO PASSWORD: ', password)
+    // console.log('USING EFFECT SUBJECT TO PASSWORD: ', password)
     socketRef.current.onmessage = e => {
       onNewMessage(e.data)
     }
@@ -41,8 +41,8 @@ export function useRoom (roomId, password) {
   }, [password])
 
   const onNewMessage = (messageString) => {
-    console.log('ON NEW MESSAGE: ', { messageString })
-    console.log('USING CALLBACK WITH PASSWORD STATE: ', password)
+    // console.log('ON NEW MESSAGE: ', { messageString })
+    // console.log('USING CALLBACK WITH PASSWORD STATE: ', password)
     const parsedMessage = JSON.parse(messageString)
     const command = parsedMessage.command
     if (command === NEW_ENTRY) {
@@ -57,7 +57,7 @@ export function useRoom (roomId, password) {
   // Functions for sending output to the server
   const checkPassword = () => {
     const { token } = getState()
-    console.log('INITIALIZING CHAT WITH PASSWORD: ', password)
+    // console.log('INITIALIZING CHAT WITH PASSWORD: ', password)
     sendMessage({
       command: INIT_CHAT,
       password,
@@ -71,13 +71,13 @@ export function useRoom (roomId, password) {
   }
 
   const onFetchEntries = (parsedMessage) => {
-    console.log('RECEIVED NEW MESSAGES COMMAND: ', parsedMessage)
+    // console.log('RECEIVED NEW MESSAGES COMMAND: ', parsedMessage)
     setIsLoading(false)
     setEntries(parsedMessage.entries.reverse())
   }
 
   const onInitResponse = (parsedMessage) => {
-    console.log('onInitResponse with, ', { parsedMessage })
+    // console.log('onInitResponse with, ', { parsedMessage })
     // setIsVerified(parsedMessage.authorized)
     // setIsWrongPassword(!parsedMessage.authorized && password != null)
     dispatch({
@@ -92,7 +92,7 @@ export function useRoom (roomId, password) {
 
   const sendFetchCommand = () => {
     const { token } = getState()
-    console.log('SENDING FETCH COMMAND WITH PASSWORD: ', password)
+    // console.log('SENDING FETCH COMMAND WITH PASSWORD: ', password)
     sendMessage({
       command: FETCH_ENTRIES,
       password,
@@ -112,7 +112,7 @@ export function useRoom (roomId, password) {
   }
 
   const sendMessage = (message) => {
-    console.log('SENDING MESSAGE ', message)
+    // console.log('SENDING MESSAGE ', message)
     try {
       socketRef.current.send(JSON.stringify(message))
     } catch (err) {

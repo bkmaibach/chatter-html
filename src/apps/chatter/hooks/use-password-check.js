@@ -4,7 +4,7 @@ import url from '/util/url'
 import { getState, dispatch } from '/store'
 
 export function usePasswordCheck (roomId, password) {
-  console.log('USING ROOM PASSWORD!', roomId, password)
+  // console.log('USING ROOM PASSWORD!', roomId, password)
   const [isCorrectPassword, setIsCorrectPassword] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
   const socketRef = useRef()
@@ -13,7 +13,7 @@ export function usePasswordCheck (roomId, password) {
   const INIT_RESPONSE = 'INIT_RESPONSE'
 
   useEffect(() => {
-    console.log('USING EFFECT SUBJECT TO PASSWORD: ', password)
+    // console.log('USING EFFECT SUBJECT TO PASSWORD: ', password)
     initialize()
     return () => {
       socketRef.current.close()
@@ -21,11 +21,11 @@ export function usePasswordCheck (roomId, password) {
   }, [password])
 
   const initialize = () => {
-    console.log('INITIALIZING, HAVE PASSWORD: ', password)
+    // console.log('INITIALIZING, HAVE PASSWORD: ', password)
     const socketUrl = url('api_ws.chatSocket', { args: { id: roomId } })
     socketRef.current = new window.WebSocket(socketUrl)
     socketRef.current.onopen = () => {
-      console.log('WebSocket open to url ', socketUrl)
+      // console.log('WebSocket open to url ', socketUrl)
       if (password !== '') {
         checkPassword()
       }
@@ -35,7 +35,7 @@ export function usePasswordCheck (roomId, password) {
       const parsedMessage = JSON.parse(e.data)
       const command = parsedMessage.command
       if (command === INIT_RESPONSE) {
-        console.log('RECEIVED INIT RESPONSE COMMAND: ', parsedMessage)
+        // console.log('RECEIVED INIT RESPONSE COMMAND: ', parsedMessage)
         setIsChecking(false)
         setIsCorrectPassword(parsedMessage.authorized)
         if (parsedMessage.authorized) {
@@ -55,7 +55,7 @@ export function usePasswordCheck (roomId, password) {
   // Functions for sending output to the server
   const checkPassword = () => {
     const { token } = getState()
-    console.log('INITIALIZING CHAT WITH PASSWORD: ', password)
+    // console.log('INITIALIZING CHAT WITH PASSWORD: ', password)
     setIsChecking(true)
     sendMessage({
       command: INIT_CHAT,
@@ -65,7 +65,7 @@ export function usePasswordCheck (roomId, password) {
   }
 
   const sendMessage = (message) => {
-    console.log('SENDING MESSAGE ', message)
+    // console.log('SENDING MESSAGE ', message)
     try {
       socketRef.current.send(JSON.stringify(message))
     } catch (err) {

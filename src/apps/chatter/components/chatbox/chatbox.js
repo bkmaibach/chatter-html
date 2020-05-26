@@ -6,12 +6,12 @@ import './chatbox.less'
 
 export const ChatBox = ({ entries, sendNewEntry }) => {
   const handleSend = (text) => {
-    console.log('sending')
+    // console.log('sending')
     sendNewEntry(text)
   }
 
   useEffect(() => {
-    console.log('SCROLLING NOW')
+    // console.log('SCROLLING NOW')
     window.scrollTo(0, document.body.scrollHeight)
   }, [entries])
 
