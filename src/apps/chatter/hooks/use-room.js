@@ -1,14 +1,11 @@
 import { useRef, useEffect, useState } from 'react'
 
 import url from '/util/url'
-import { getState } from '/store'
+import { getState, dispatch } from '/store'
 
 export function useRoom (roomId, password) {
   const [entries, setEntries] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-  const [isError, setIsError] = useState(false)
-  const [isWrongPassword, setIsWrongPassword] = useState(false)
-  const [passwordIsVerified, setIsVerified] = useState(false)
   const socketRef = useRef()
 
   // API commands
@@ -24,7 +21,6 @@ export function useRoom (roomId, password) {
     const socketUrl = url('api_ws.chatSocket', { args: { id: roomId } })
     socketRef.current = new window.WebSocket(socketUrl)
     socketRef.current.onerror = e => {
-      setIsError(true)
       console.log(e)
     }
     return () => {
@@ -82,8 +78,13 @@ export function useRoom (roomId, password) {
 
   const onInitResponse = (parsedMessage) => {
     console.log('onInitResponse with, ', { parsedMessage })
-    setIsVerified(parsedMessage.authorized)
-    setIsWrongPassword(!parsedMessage.authorized && password != null)
+    // setIsVerified(parsedMessage.authorized)
+    // setIsWrongPassword(!parsedMessage.authorized && password != null)
+    dispatch({
+      type: 'SET_ROOM_PASSWORD_VERIFIED',
+      roomId,
+      isVerified: parsedMessage.authorized
+    })
     if (parsedMessage.authorized) {
       sendFetchCommand()
     }
@@ -116,9 +117,8 @@ export function useRoom (roomId, password) {
       socketRef.current.send(JSON.stringify(message))
     } catch (err) {
       console.log(err.message)
-      setIsError(true)
     }
   }
 
-  return { isLoading, isError, passwordIsVerified, isWrongPassword, entries, sendNewEntry }
+  return { isLoading, entries, sendNewEntry }
 }
