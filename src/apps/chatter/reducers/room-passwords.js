@@ -6,7 +6,7 @@ export const roomPasswords = (action, state) => {
     const roomId = action.roomId
     const password = action.password
     const oldRoomPasswords = state.roomPasswords
-    const newRoomPasswords = { ...oldRoomPasswords, [roomId]: { password, isVerified: null } }
+    const newRoomPasswords = { ...oldRoomPasswords, [roomId]: { password, isCorrect: null } }
     state.roomPasswords = newRoomPasswords
     console.log('NEW STATE', state.roomPasswords[roomId])
     return state
@@ -14,11 +14,9 @@ export const roomPasswords = (action, state) => {
     // console.log('SETTING ROOM PASSWORD VERIFIED: ', { action })
     const roomId = action.roomId
     const oldRoomPasswords = state.roomPasswords
-    const oldRoomPassword = oldRoomPasswords[roomId] || {}
-    const password = oldRoomPassword.password
-    const newRoomPasswords = { ...oldRoomPasswords, [roomId]: { password, isVerified: action.isVerified } }
-    // console.log('EXISTING STATE', newRoomPasswords[roomId])
-    newRoomPasswords[roomId].isVerified = action.isVerified
+    const oldRoomPasswordObject = oldRoomPasswords[roomId] || {}
+    const newRoomPasswords = { ...oldRoomPasswords,
+      [roomId]: { ...oldRoomPasswordObject, isCorrect: action.isCorrect } }
     state.roomPasswords = newRoomPasswords
     console.log('NEW STATE', state.roomPasswords[roomId])
     return state

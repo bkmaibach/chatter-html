@@ -32,7 +32,8 @@ export function Room ({ id }) {
     ({ roomPasswords }) => roomPasswords[id] || {})
   console.log('passwordObject', passwordObject)
   const password = passwordObject.password
-  const isVerified = passwordObject.isVerified
+  const isCorrect = passwordObject.isCorrect
+
   if (isLoading) {
     // console.log('Loading room info...')
     return <div className='container mt-2'><LoadingIndicator /></div>
@@ -71,9 +72,9 @@ export function Room ({ id }) {
         <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
         <h1>{name}</h1>
         {roomIsLoading && <LoadingIndicator />}
-        {passwordRequired && !isVerified && <RoomPassword
+        {passwordRequired && !isCorrect && <RoomPassword
           roomId={id}
-          showWrongPasswordMessage={isVerified === false}
+          showWrongPasswordMessage={isCorrect === false}
         />}
         {!roomIsLoading && <ChatBox
           entries={entries}

@@ -9,10 +9,11 @@ import store, { dispatch } from '/store'
 
 export function RoomPassword ({ roomId }) {
   const [passwordInput, setPasswordInput] = useState(null)
+  // Password entry and its correctness is store managed state
   const passwordObject = useMappedState(store,
     ({ roomPasswords }) => roomPasswords[roomId] || {})
   const password = passwordObject.password
-  const isVerified = passwordObject.isVerified
+  const isCorrect = passwordObject.isCorrect
 
   const handleInputChange = (e) => {
     setPasswordInput(e.target.value)
@@ -38,8 +39,8 @@ export function RoomPassword ({ roomId }) {
           onEnterUp={handleSubmitPassword}
           focus
         />
-        {password && isVerified === false && <h2>Sorry! wrong password</h2>}
-        {password && isVerified === null && <LoadingIndicator />}
+        {password && isCorrect === false && <h2>Sorry! wrong password</h2>}
+        {password && isCorrect === null && <LoadingIndicator />}
         <button
           className='btn'
           onClick={handleSubmitPassword}
