@@ -5,11 +5,15 @@
 // We'll include Helmet for setting title and meta tags dynamically,
 // based on the result of our API request.
 // And we'll use the `useRequest` hook for requesting the resource data.
+
 import Helmet from '@app-elements/helmet'
 import LoadingIndicator from '@app-elements/loading-indicator'
 import { Link } from '@app-elements/router'
 import { useRequest } from '@app-elements/use-request'
+import { useMappedState } from '@app-elements/use-mapped-state'
 
+import { RoomPassword } from '../components/room-password'
+import { useRoom } from '/apps/chatter/hooks/use-room'
 import { ChatBox } from '../components/chatbox'
 
 // `url` is a util for getting route paths by name. It's a project
@@ -23,36 +27,53 @@ import { WEB_URL } from '/consts'
 
 // Here is our page component which will use the `useRequest` hook.
 export function Room ({ id }) {
-  const { result, error, isLoading } = useRequest(store, url('api.room', { args: { id } }))
+  const { result, error, isLoading } =
+    useRequest(store, url('api.room', { args: { id } }))
+
+  const passwordObject = useMappedState(store,
+    ({ roomPasswords }) => roomPasswords[id] || {})
+  const password = passwordObject.password
+  const isCorrect = passwordObject.isCorrect
+  const {
+    isLoading: roomIsLoading,
+    entries,
+    sendNewEntry
+  } = useRoom(id, password)
 
   if (isLoading) {
+    // console.log('Loading room info...')
     return <div className='container mt-2'><LoadingIndicator /></div>
   }
+
+  const { name, hasPassword: passwordRequired } = result
 
   if (error != null) {
     return error.code === 404
       ? <div><p>A chatroom with that name was not found!</p></div>
       : <div><p>Something went wrong!</p></div>
+  } else {
+    return (
+      <div key='user' className='container pt-7'>
+        <Helmet
+          title={name}
+          meta={[
+            { name: 'description', content: 'Helmet description' },
+            { property: 'og:type', content: 'article' },
+            { property: 'og:title', content: name },
+            { property: 'og:description', content: 'Helmet description' },
+            { property: 'og:image', content: 'https://www.gooseinsurance.com/images/blog-image-1.jpg' },
+            { property: 'og:url', content: `${WEB_URL}${url('api.room', { args: { id } })}` }
+          ]}
+        />
+        <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
+        <h1>{name}</h1>
+        {roomIsLoading && <LoadingIndicator />}
+        {passwordRequired && !isCorrect && <RoomPassword roomId={id} />}
+        {!roomIsLoading && <ChatBox
+          entries={entries}
+          sendNewEntry={sendNewEntry}
+        />}
+      </div>
+    )
   }
-
-  const { name } = result
-
-  return (
-    <div key='user' className='container pt-7'>
-      <Helmet
-        title={name}
-        meta={[
-          { name: 'description', content: 'Helmet description' },
-          { property: 'og:type', content: 'article' },
-          { property: 'og:title', content: name },
-          { property: 'og:description', content: 'Helmet description' },
-          { property: 'og:image', content: 'https://www.gooseinsurance.com/images/blog-image-1.jpg' },
-          { property: 'og:url', content: `${WEB_URL}${url('api.room', { args: { id } })}` }
-        ]}
-      />
-      <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
-      <h1>{name}</h1>
-      <ChatBox roomId={id} />
-    </div>
-  )
 }
