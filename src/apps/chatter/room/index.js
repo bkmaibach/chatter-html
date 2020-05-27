@@ -1,19 +1,11 @@
-// Here is a page that will display details about a specific resource.
-// In our case, it will be a user specified by the current routes `:id`
-// segment.
-
-// We'll include Helmet for setting title and meta tags dynamically,
-// based on the result of our API request.
-// And we'll use the `useRequest` hook for requesting the resource data.
-
 import Helmet from '@app-elements/helmet'
 import LoadingIndicator from '@app-elements/loading-indicator'
 import { Link } from '@app-elements/router'
 import { useRequest } from '@app-elements/use-request'
+import { useVariantState } from '@app-elements/use-variant-state'
 import { useMappedState } from '@app-elements/use-mapped-state'
 
 import { RoomPassword } from '../components/room-password'
-import { useRoom } from '/apps/chatter/hooks/use-room'
 import { ChatBox } from '../components/chatbox'
 
 // `url` is a util for getting route paths by name. It's a project
@@ -30,56 +22,82 @@ export function Room ({ id }) {
   const { result, error, isLoading } = useRequest(store, url('api.room', { args: { id } }))
   const passwordObject = useMappedState(store, ({ roomPasswords }) => roomPasswords[id] || {})
   const password = passwordObject.password
-  const isVerified = passwordObject.isVerified
-  // const isVerified = useMappedState(store, ({ roomPasswords }) => roomPasswords[id].isVerified)
-  if (isLoading) {
-    console.log('Loading room info...')
-    return <div className='container mt-2'><LoadingIndicator /></div>
-  }
-  if (error) {
-    return <div>Error!</div>
-  }
-  const { name, hasPassword: passwordRequired } = result
-  console.log('CALLING WITH PASSWORD', password)
+  const isCorrect = passwordObject.isCorrect
+
   const {
-    isLoading: roomIsLoading,
-    entries,
-    sendNewEntry
-  } = useRoom(id, password)
+    checkState,
+    transitionTo,
+    renderPasswordInput,
+    renderChatbox
+  } = useVariantState({
+    initial: 'initial',
+    states: {
+      initial: [],
+      error: [],
+      renderPasswordInput: [],
+      renderChatbox: []
+    },
+    transitions: {
+      initial: ['renderPasswordInput', 'renderChatbox', 'error'],
+      renderPasswordInput: ['renderChatbox']
+    },
+    effects: {
+      renderPasswordInput: () => {
+      },
+      renderChatbox: () => {
+      }
+      // error: () => {
+      // }
+    }
+  })
 
   if (isLoading) {
+    console.log('Still loading room info...')
     return <div className='container mt-2'><LoadingIndicator /></div>
-  } else if (error != null) {
-    return error.code === 404
-      ? <div><p>A chatroom with that name was not found!</p></div>
-      : <div><p>Something went wrong!</p></div>
-  } else {
-    console.log('ISVERFIED IS ', isVerified)
-    return (
-      <div key='user' className='container pt-7'>
-        <Helmet
-          title={name}
-          meta={[
-            { name: 'description', content: 'Helmet description' },
-            { property: 'og:type', content: 'article' },
-            { property: 'og:title', content: name },
-            { property: 'og:description', content: 'Helmet description' },
-            { property: 'og:image', content: 'https://www.gooseinsurance.com/images/blog-image-1.jpg' },
-            { property: 'og:url', content: `${WEB_URL}${url('api.room', { args: { id } })}` }
-          ]}
-        />
-        <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
-        <h1>{name}</h1>
-        {roomIsLoading && <LoadingIndicator />}
-        {passwordRequired && !isVerified && <RoomPassword
-          roomId={id}
-          showWrongPasswordMessage={isVerified === false}
-        />}
-        {!roomIsLoading && <ChatBox
-          entries={entries}
-          sendNewEntry={sendNewEntry}
-        />}
-      </div>
-    )
   }
+  const { name, hasPassword: passwordRequired } = result
+  console.log('Checking state...')
+  if (checkState('initial')) {
+    console.log('initial state')
+    if (passwordRequired && !password) {
+      console.log('transitioning to renderPasswordInput')
+      transitionTo(renderPasswordInput)
+    } else if (!passwordRequired || isCorrect) {
+      console.log('transitioning to renderChatbox')
+      transitionTo(renderChatbox)
+    } else if (error) {
+      console.log('transitioning to error')
+      transitionTo(error)
+    }
+  } else if (checkState('renderPasswordInput')) {
+    console.log('renderPasswordInput state')
+  } else if (checkState('renderChatbox')) {
+    console.log('renderChatbox state')
+  } else if (checkState('error')) {
+    console.log('error state')
+  }
+  console.log('Rendering...')
+  return (
+    <div key='user' className='container pt-7'>
+      <Helmet
+        title={name}
+        meta={[
+          { name: 'description', content: 'Helmet description' },
+          { property: 'og:type', content: 'article' },
+          { property: 'og:title', content: name },
+          { property: 'og:description', content: 'Helmet description' },
+          { property: 'og:image', content: 'https://www.gooseinsurance.com/images/blog-image-1.jpg' },
+          { property: 'og:url', content: `${WEB_URL}${url('api.room', { args: { id } })}` }
+        ]}
+      />
+      <p><Link name='rooms'>&larr; Back to all rooms</Link></p>
+      <h1>{name}</h1>
+      {checkState('initial') && <div className='container mt-2'><LoadingIndicator /></div>}
+      {checkState('error') && (error.code === 404
+        ? <div><p>A chatroom with that name was not found!</p></div>
+        : <div><p>Something went wrong!</p></div>)}
+      {checkState('renderPasswordInput') && <RoomPassword roomId={id} />}
+      {checkState('renderChatbox') && <ChatBox />}
+    </div>
+  )
 }

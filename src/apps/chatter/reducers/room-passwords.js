@@ -6,7 +6,7 @@ export const roomPasswords = (action, state) => {
     const roomId = action.roomId
     const password = action.password
     const oldRoomPasswords = state.roomPasswords
-    const newRoomPasswords = { ...oldRoomPasswords, [roomId]: { password, isVerified: null } }
+    const newRoomPasswords = { ...oldRoomPasswords, [roomId]: { password, isCorrect: null } }
     console.log(newRoomPasswords)
     state.roomPasswords = newRoomPasswords
     return state
@@ -15,7 +15,7 @@ export const roomPasswords = (action, state) => {
     const roomId = action.roomId
     const oldRoomPasswords = state.roomPasswords
     const newRoomPasswords = { ...oldRoomPasswords }
-    newRoomPasswords[roomId].isVerified = action.isVerified
+    newRoomPasswords[roomId].isCorrect = action.isCorrect
     console.log(newRoomPasswords)
     state.roomPasswords = newRoomPasswords
     return state

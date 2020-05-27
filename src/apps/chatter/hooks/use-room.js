@@ -78,12 +78,12 @@ export function useRoom (roomId, password) {
 
   const onInitResponse = (parsedMessage) => {
     console.log('onInitResponse with, ', { parsedMessage })
-    // setIsVerified(parsedMessage.authorized)
+    // setisCorrect(parsedMessage.authorized)
     // setIsWrongPassword(!parsedMessage.authorized && password != null)
     dispatch({
       type: 'SET_ROOM_PASSWORD_VERIFIED',
       roomId,
-      isVerified: parsedMessage.authorized
+      isCorrect: parsedMessage.authorized
     })
     if (parsedMessage.authorized) {
       sendFetchCommand()
