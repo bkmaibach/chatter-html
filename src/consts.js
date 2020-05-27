@@ -16,7 +16,7 @@ export const WEB_URL = (function () {
 const apiUrlTemplate = (protocol) => (
   {
     test: '',
-    development: `${protocol}//localhost:8000`,
+    development: `${protocol}//192.168.11.19:8000`,
     staging: `${protocol}//pwa-starter-api-dev.herokuapp.com`,
     production: `${protocol}//api.pwa-starter.co`
   }[environment]
