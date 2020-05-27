@@ -47,7 +47,7 @@ export const Rooms = () => {
 
       <Form {...formProps}>
         <TextInput name='name' placeholder='Room Name' required isFormField />
-        <TextInput name='password' placeholder='Password (optional)' isFormField />
+        <TextInput name='password' type='password' placeholder='Password (optional)' isFormField />
         <SubmitButton className='btn'>Create New Room</SubmitButton>
       </Form>
     </div>

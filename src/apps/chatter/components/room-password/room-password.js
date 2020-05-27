@@ -33,6 +33,7 @@ export function RoomPassword ({ roomId }) {
       <div className='room-password'>
         <TextInput
           name='password'
+          type='password'
           placeholder='Enter password...'
           value={passwordInput}
           onChange={handleInputChange}
