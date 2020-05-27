@@ -7,6 +7,7 @@ import { useMappedState } from '@app-elements/use-mapped-state'
 
 import { RoomPassword } from '../components/room-password'
 import { ChatBox } from '../components/chatbox'
+import { useRoom } from '/apps/chatter/hooks/use-room'
 
 // `url` is a util for getting route paths by name. It's a project
 // level util because it reads the statically defined [routes.js](/routes.html)
@@ -17,12 +18,13 @@ import store from '/store'
 
 import { WEB_URL } from '/consts'
 
-// Here is our page component which will use the `useRequest` hook.
+// Here is our page component2 which will use the `useRequest` hook.
 export function Room ({ id }) {
   const { result, error, isLoading } = useRequest(store, url('api.room', { args: { id } }))
   const passwordObject = useMappedState(store, ({ roomPasswords }) => roomPasswords[id] || {})
   const password = passwordObject.password
   const isCorrect = passwordObject.isCorrect
+  const { entries, sendNewEntry } = useRoom(id)
 
   const {
     checkState,
@@ -56,7 +58,7 @@ export function Room ({ id }) {
     return <div className='container mt-2'><LoadingIndicator /></div>
   }
   const { name, hasPassword: passwordRequired } = result
-  console.log('Checking state...')
+  console.log('Checking state...', isCorrect)
   if (checkState('initial')) {
     console.log('initial state')
     if (passwordRequired && !password) {
@@ -71,6 +73,9 @@ export function Room ({ id }) {
     }
   } else if (checkState('renderPasswordInput')) {
     console.log('renderPasswordInput state')
+    if (isCorrect) {
+      transitionTo(renderChatbox)
+    }
   } else if (checkState('renderChatbox')) {
     console.log('renderChatbox state')
   } else if (checkState('error')) {
@@ -97,7 +102,7 @@ export function Room ({ id }) {
         ? <div><p>A chatroom with that name was not found!</p></div>
         : <div><p>Something went wrong!</p></div>)}
       {checkState('renderPasswordInput') && <RoomPassword roomId={id} />}
-      {checkState('renderChatbox') && <ChatBox />}
+      {checkState('renderChatbox') && <ChatBox entries={entries} sendNewEntry={sendNewEntry} />}
     </div>
   )
 }

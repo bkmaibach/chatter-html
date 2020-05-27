@@ -1,11 +1,14 @@
 import { useRef, useEffect, useState } from 'react'
 
-import url from '/util/url'
-import { getState, dispatch } from '/store'
+import { useMappedState } from '@app-elements/use-mapped-state'
 
-export function useRoom (roomId, password) {
+import url from '/util/url'
+import store, { getState, dispatch } from '/store'
+
+export function useRoom (roomId) {
   const [entries, setEntries] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const passwordObject = useMappedState(store, ({ roomPasswords }) => roomPasswords[roomId] || {})
+  const password = passwordObject.password
   const socketRef = useRef()
 
   // API commands
@@ -17,7 +20,6 @@ export function useRoom (roomId, password) {
 
   useEffect(() => {
     console.log('CONNECTING')
-    setIsLoading(true)
     const socketUrl = url('api_ws.chatSocket', { args: { id: roomId } })
     socketRef.current = new window.WebSocket(socketUrl)
     socketRef.current.onerror = e => {
@@ -72,7 +74,6 @@ export function useRoom (roomId, password) {
 
   const onFetchEntries = (parsedMessage) => {
     console.log('RECEIVED NEW MESSAGES COMMAND: ', parsedMessage)
-    setIsLoading(false)
     setEntries(parsedMessage.entries.reverse())
   }
 
@@ -120,5 +121,5 @@ export function useRoom (roomId, password) {
     }
   }
 
-  return { isLoading, entries, sendNewEntry }
+  return { entries, sendNewEntry }
 }
